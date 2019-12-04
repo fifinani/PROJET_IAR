@@ -1,0 +1,16 @@
+# =-=-=-=-=-=-=-=-=-=-=
+# LOG DATA 
+# =-=-=-=-=-=-=-=-=-=-=
+#
+# =-= Roborobo^3 
+# =-= Official version tag    : 20180704
+# =-= Current build name      : Kyoto build (roborobo^3 w/ SDL2)
+# =-= Compilation version tag : Nov 29 2019 - 11:03:06
+#
+# Loaded time stamp           : 20191129-12h29m52s684442us
+# process ID                  : 12555
+#
+# random seed             : -1939253889
+# Started: 20191129-12h29m52s684442us
+# Stopped: 20191129-12h30m07s950546us
+# Elapsed: 15 seconds.

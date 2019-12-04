@@ -18,6 +18,8 @@ A_radius = 60;
 B_radius = 60;
 agent_radius = 60;
 
+
+
 class Agent :
     def scan(self) :
         self.A = 0;
@@ -32,3 +34,13 @@ class Agent :
             self.update_A()
 
 class Map:
+    def init(self):
+        return;
+
+
+class Strategy:
+    def update(self):
+        return;
+
+
+Strategy Consume_Nearest = new Strategy();
