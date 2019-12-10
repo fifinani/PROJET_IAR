@@ -24,11 +24,156 @@ IARController::IARController( RobotWorldModel *__wm ) : Controller ( __wm )
         std::cerr << "[CRITICAL] This project assumes robot specifications with " << NB_SENSORS << " sensors (provided: " << _wm->_cameraSensorsNb << " sensors). STOP.\n";
         exit(-1);
     }
+    srand (time(NULL));
 }
 
 /* **** **** **** */
 /* **** **** **** */
 /* **** **** **** */
+/*
+Algos:
+
+Return 0 : On va vers A
+Return 1 : on va vers B
+Return -1 : On search
+
+*/
+
+//Consume nearest
+int IARController::objective(){
+  if(getDistance_A() == -1 && getDistance_B() == -1){
+    return -1;
+  }else{
+    return !(getDistance_A()<getDistance_B());
+  }
+}
+
+/*
+//CueXDeficit
+int IARController::objective(){
+  if(getDistance_A() == -1 && getDistance_B() == -1){
+    return -1;
+  }else if (getDistance_A() == -1 || getDistance_B() == -1){
+    return !(getDistance_A()<getDistance_B());
+  }else{
+    double cue_A = ((MAXSENSORDISTANCE-getDistance_A())/MAXSENSORDISTANCE)*A_A*(A_MAX - A_value)/A_MAX;
+    double cue_B = ((MAXSENSORDISTANCE-getDistance_B())/MAXSENSORDISTANCE)*B_B*(B_MAX - B_value)/B_MAX;
+    return !(cue_A > cue_B);
+  }
+}
+
+//Cost Function  !!!!!implementer pas de detection
+int IARController::objective(){
+  return !(((A_MAX - A_value)*(A_MAX - A_value)/(A_MAX*A_MAX)) > ((B_MAX - B_value)*(B_MAX - B_value)/(B_MAX*B_MAX)));
+}
+
+// One Step Planning Cost Function
+int IARController::objective(){
+  double A_payoff = A_A;
+  double B_payoff = B_B;
+  if(getDistance_A() == -1 ){
+    A_payoff = 0;
+  }
+  if(getDistance_B() == -1 ){
+    B_payoff = 0;
+  }
+  double cost_A = (((A_MAX - A_value)/A_MAX) - A_payoff + (A_LOSS_PER_CYCLE*getDistance_A()/DISTANCE_PER_CYCLE))² + (((B_MAX - B_value)/B_MAX) - B_A + (B_LOSS_PER_CYCLE*getDistance_A()/DISTANCE_PER_CYCLE))²;
+  double cost_B = (((B_MAX - B_value)/B_MAX) - B_payoff + (B_LOSS_PER_CYCLE*getDistance_B()/DISTANCE_PER_CYCLE))² + (((A_MAX - A_value)/A_MAX) - A_B + (A_LOSS_PER_CYCLE*getDistance_B()/DISTANCE_PER_CYCLE))²;
+  int choice = cost_A > cost_B;
+  if((choice && getDistance_B() == -1) || (!choice && getDistance_A() == -1) ){
+    return -1;
+  }else{
+    return choice;
+  }
+}
+
+// Reactive One Step Planning Cost Function
+int IARController::objective(){
+  double A_payoff = A_A;
+  double B_payoff = B_B;
+  if(getDistance_A() == -1 ){
+    A_payoff = 0;
+  }
+  if(getDistance_B() == -1 ){
+    B_payoff = 0;
+  }
+  double cost_A = (((A_MAX - A_value)/A_MAX) - A_payoff + (A_LOSS_PER_CYCLE*getDistance_A()/DISTANCE_PER_CYCLE))² + (((B_MAX - B_value)/B_MAX) - B_A + (B_LOSS_PER_CYCLE*getDistance_A()/DISTANCE_PER_CYCLE))²;
+  double cost_B = (((B_MAX - B_value)/B_MAX) - B_payoff + (B_LOSS_PER_CYCLE*getDistance_B()/DISTANCE_PER_CYCLE))² + (((A_MAX - A_value)/A_MAX) - A_B + (A_LOSS_PER_CYCLE*getDistance_B()/DISTANCE_PER_CYCLE))²;
+  int choice = cost_A > cost_B;
+  if((choice && getDistance_B() == -1) || (!choice && getDistance_A() == -1) ){
+    if(getDistance_A() == -1 && getDistance_B() == -1){
+      return -1;
+    }else{
+      return !(getDistance_A()<getDistance_B());
+    }
+  }else{
+    return choice;
+  }
+}
+
+void IARController::explore(){
+  _wm->_desiredRotationalVelocity = 0;
+  double r = rand();
+  if(rand < 0.01){
+    if(rand < 0.005){
+      target_orientation = _wm->_agentAbsoluteOrientation + 30;
+    }else{
+      target_orientation = _wm->_agentAbsoluteOrientation - 30;
+    }
+  }
+  if ( target_orientation - _wm->_agentAbsoluteOrientation < 0 )
+      _wm->_desiredRotationalVelocity = +10;
+  else if( target_orientation - _wm->_agentAbsoluteOrientation > 0 )
+      _wm->_desiredRotationalVelocity = -10;
+}
+
+*/
+void IARController::goToA(){
+  _wm->_desiredRotationalVelocity = 0;
+  target_orientation = 0;
+  Point2d closest_A = getClosestA();
+  double angleToA = getAngleToTarget( _wm->_xReal, _wm->_yReal, _wm->_agentAbsoluteOrientation, closest_A.x,closest_A.y);
+  if ( angleToA < 0 )
+      _wm->_desiredRotationalVelocity = +10;
+  else if( angleToA > 0 )
+      _wm->_desiredRotationalVelocity = -10;
+}
+
+void IARController::goToB(){
+  _wm->_desiredRotationalVelocity = 0;
+  target_orientation = 0;
+  Point2d closest_B = getClosestB();
+  double angleToB = getAngleToTarget( _wm->_xReal, _wm->_yReal, _wm->_agentAbsoluteOrientation, closest_B.x,closest_B.y);
+  if ( angleToB < 0 )
+      _wm->_desiredRotationalVelocity = +10;
+  else if( angleToB > 0 )
+      _wm->_desiredRotationalVelocity = -10;
+}
+
+double IARController::getDistance_A(){
+  Point2d closest_A = getClosestA();
+  return sqrt(pow((_wm->_xReal - closest_A.x),2)+pow((_wm->_yReal - closest_A.y),2));
+
+}
+
+double IARController::getDistance_B(){
+  Point2d closest_B = getClosestB();
+  return sqrt(pow((_wm->_xReal - closest_B.x),2)+pow((_wm->_yReal - closest_B.y),2));
+
+}
+
+
+Point2d IARController::getClosestA(){
+
+  return Point2d(0,0);
+}
+
+Point2d IARController::getClosestB(){
+  return Point2d(0,0);
+
+}
+
+
 
 IARController::~IARController()
 {
@@ -51,135 +196,13 @@ void IARController::reset()
 // called at everytime step. Each robot is called once per timestep, but order of call always change from step to step. This is *the* function (and possibly the only one, in most case) you have to change.
 void IARController::step()
 {
-    // QUICK HELP
-    //
-    //
-    // ## SENSORS ##
-    //
-    // getDistance returns a real value in [0,1], with 1 as the maximal value (i.e. see nothing within (limited) eyesight)
-    //
-    // getActualRotation returns a real value in [-1,1] which represents the current rotational speed
-    // getActualTranslation returns a real value in [-1,1] which represents the current translational speed
-    // getOrientation returns a real value in [-1,1], which represents an absolute orientation wrt the center-top of the arena
-    //
-    // ## ACTUATORS ##
-    //
-    // setRotation(double value) and setTranslation(double value) take values in [-1.0,+1.0]
-    //      rotation: positive value means clock-wise rotation.
-    //      note that these are *desired* rotation/translation (see below). The robot may not be able to comply if it is stuck.
-    //
-    // The actual maximal translation speed, maximal rotational speed and maximal rotational update values are defined in the related properties file. Relevant parameters are:
-    //      gMaxTranslationalSpeed
-    //          strictly positive integer value.
-    //          it is strongly advised *not* to assign a value greated than the diameter of the robot to avoid jump in space.
-    //          suggested value: 3, for mini-robots
-    //          Values passed to the setTranslation function are mapped to [-gMaxTranslationalSpeed,+gMaxTranslationalSpeed]
-    //      gMaxRotationalSpeed
-    //          strictly positive integer value, in ]0,180]
-    //          expressed in degrees per step.
-    //          suggested value: 30
-    //      gMaxTranslationalDeltaValue
-    //          strictly positive integer value, in ]0,gMaxRotationalSpeed]
-    //          Maximum angle update per step for rotational speed
-    //          Rationale: this models the limits of change the motor output during one time step.
-    //          gMaxTranslationalDeltaValue and gMaxRotationalSpeed can have a similar value, i.e. motor is over-powered.
-    //          Values passed to the setRotational function are
-    //              1. mapped to [-gMaxTranslationalDeltaValue,+gMaxTranslationalDeltaValue]
-    //              2. actual rotational speed is updated using the value from (1), ie. increased, decreased or unchanged.
-    //              3. if needed, actual rotational speed is bounded to fit within [-gMaxRotationalSpeed,+gMaxRotationalSpeed]
+  _wm->_desiredTranslationalValue = DISTANCE_PER_CYCLE;
+  int target = objective();
+  if(target == 0)
+    goToA();
+  else if(target == 1)
+    goToB();
+  else
+    explore();
 
-    
-    
-    // * How to access various useful sensory information
-    // Full list: check <roborobo3>/include/core/Controllers/Controller.h - section "Accessing methods"
-    
-    // Display information for agent on focus, only if focus active.
-    // note that at start up, gRobotDisplayFocus is false.
-    // to activate gRobotDisplayFocus, press the "F" key at runtime
-    // to change the robot under focus, use <tab> (or <shift+tab>)
-    // reminder: all commands available at run-time can be displayed in the console with the "H" key (=help)
-    
-    if ( gRobotDisplayFocus && getId() == gRobotIndexFocus ) // Execute __only__ for robot under focus (press "F" to focus on a robot, <tab> and <shift>+<tab> to change robot focus)
-    {
-        std::cout << "Robot #" << getId() << "\n";
-        std::cout << "\torientation: " << getOrientation()*180.0 << "°\n";
-        Point2d pos = getPosition();
-        std::cout << "\tposition: ( " << pos.x << " , " << pos.y << " )\n";
-        std::cout << "\tactual translation: " << getActualTranslation() << " (in [-1,+1] wrt min/max values)\n";
-        std::cout << "\tactual rotation: " << getActualRotation() << " (in [-1,+1] wrt min/max values)\n";
-        
-        std::cout << "\tsensorbelt status:" << "\n";
-        for ( int i = 0 ; i != NB_SENSORS ; i++ ) // also possible to check each sensor separatly using SENSOR_L, SENSOR_R, etc. (check Utilities/Sensorbelt.h)
-        {
-            double dist = getDistanceAt(i);
-            std::cout << "\t\t[" << i << "] ";
-            if ( getWallAt(i) == 1 )
-            {
-                std::cout << "[dist=" << dist << "] Wall\n";
-            }
-            else
-            {
-                int robotId = getRobotIdAt(i);
-                if ( robotId != -1 )
-                {
-                    std::cout << "[dist=" << dist << "] Robot #" << robotId << "\n\t\t      relative orientation wrt robot "<<getId()<<" : " << getRobotRelativeOrientationAt( i )*180.0 << "°\n";
-                    
-                    // accessing the target robot's controller
-                    // can be useful if additional methods have been implemented (e.g. communication)
-                    IARController* targetRobotController = dynamic_cast<IARController*>(getRobotControllerAt(i));
-                    std::cout << "\t\t      [double-check] target robot's id really is #" << targetRobotController->getId() << "\n"; // example of use
-                    
-                    sendMessage(targetRobotController,"Ping");
-                    
-                }
-                else
-                {
-                    std::cout << "[dist=" << dist << "] Nothing\n";
-                }
-            }
-        }
-    }
-    
-    // * How to use sensors to drive the robot
-    // This is an example that code for wall avoidance
-    
-    setTranslation( sin( ( ( getDistanceAt(SENSOR_FFL) + getDistanceAt(SENSOR_FFR) ) / 2.0 )* M_PI / 2.0) );
-    
-    double distanceOnMyLeft = getDistanceAt(SENSOR_L) + getDistanceAt(SENSOR_FL) + getDistanceAt(SENSOR_FFL);
-    double distanceOnMyRight = getDistanceAt(SENSOR_R) + getDistanceAt(SENSOR_FR) + getDistanceAt(SENSOR_FFR);
-    
-    double rotationDelta = 0.3;
-    double noiseAmplitude = 0.01;
-    
-    if ( distanceOnMyLeft < distanceOnMyRight )
-        setRotation( +rotationDelta );
-    else
-        if ( distanceOnMyRight < distanceOnMyLeft )
-            setRotation( -rotationDelta );
-        else
-            //setRotation( 0.1 - (double)(random01()*0.2));
-            setRotation( noiseAmplitude * ( 1.0 - (double)(random01()*2.0) ) );
-    
 }
-
-/* **** **** **** */
-/* **** **** **** */
-/* **** **** **** */
-
-void IARController::sendMessage(IARController* _targetRobot, std::string _message)
-{
-    _targetRobot->receiveMessage(getId(),_message);
-}
-
-/* **** **** **** */
-/* **** **** **** */
-/* **** **** **** */
-
-void IARController::receiveMessage(int _senderId, std::string _message)
-{
-    std::cout << "\t\t\t>>> [Robot #" << getId() << "] received message from robot #" << _senderId << " : \"" << _message << "\" <<<\n";
-}
-
-/* **** **** **** */
-/* **** **** **** */
-/* **** **** **** */
