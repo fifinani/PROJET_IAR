@@ -42,7 +42,7 @@ void IARWorldObserver::stepPre() // called just *before* the robots move
         for ( int i = 0 ; i != gWorld->getNbOfRobots() ; i++ )
         {
             Robot *robot = (gWorld->getRobot(i));
-            
+
             (*robot).setCoordReal( ...TODO... , ...TODO...  ); // whereever you want, but check locations are empty before.
         }
     }

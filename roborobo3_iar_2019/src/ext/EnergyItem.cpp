@@ -11,7 +11,7 @@ EnergyItem::EnergyItem( int __id ) : CircleObject( __id ) // should only be call
     std::string s = "";
 	std::stringstream out;
 	out << getId();
-    
+
     s = "physicalObject[";
 	s += out.str();
 	s += "].energy";
@@ -23,7 +23,7 @@ EnergyItem::EnergyItem( int __id ) : CircleObject( __id ) // should only be call
             std::cerr << "[MISSING] Physical Object #" << _id << " (EnergyItem) missing default energy initial level (integer, >=0). Assume default (" << gEnergyItemDefaultInit << ").\n";
         maxEnergyLevel = gEnergyItemDefaultInit;
     }
-    
+
     s = "physicalObject[";
 	s += out.str();
 	s += "].energyMode";
@@ -46,6 +46,7 @@ void EnergyItem::isTouched( int __idAgent )
 {
 //    if ( gVerbose && gDisplayMode <= 1)
 //        std::cout << "[DEBUG] Physical object #" << this->getId() << " (energy item) touched by robot #" << __idAgent << std::endl;
+
 }
 
 void EnergyItem::isWalked( int __idAgent )
@@ -55,14 +56,13 @@ void EnergyItem::isWalked( int __idAgent )
 
     double energyRequestedValueByRobot;
     double energyProvided;
-    
     switch ( energyMode )
     {
         case 0: // give all
             gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy( maxEnergyLevel );
             regrowTime = regrowTimeMax;
             break;
-            
+
         case 1: // give what is asked, fixed respawn delay
             energyRequestedValueByRobot = gWorld->getRobot(__idAgent)->getWorldModel()->getEnergyRequestValue(); // in [0,1[ (guaranteed)
             energyProvided = energyRequestedValueByRobot * maxEnergyLevel;
@@ -70,7 +70,7 @@ void EnergyItem::isWalked( int __idAgent )
             assert ( energyProvided >= 0 );
             regrowTime = regrowTimeMax;
             break;
-            
+
         case 2: // give what is asked, remaining sets respawn delay
             energyRequestedValueByRobot = gWorld->getRobot(__idAgent)->getWorldModel()->getEnergyRequestValue(); // in [0,1[ (guaranteed)
             energyProvided = energyRequestedValueByRobot * maxEnergyLevel;
@@ -94,4 +94,5 @@ void EnergyItem::isPushed( int __id, std::tuple<double, double> __speed )
 {
     //    if ( gVerbose && gDisplayMode <= 1)
     //        std::cout << "[DEBUG] Physical object #" << this->getId() << " (energy item) pushed by robot/object #" << __id << std::endl;
+
 }

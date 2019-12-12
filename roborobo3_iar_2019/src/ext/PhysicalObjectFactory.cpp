@@ -1,6 +1,8 @@
 #include "World/PhysicalObjectFactory.h"
 #include "World/RoundObject.h"
 #include "World/EnergyItem.h"
+#include "IAR/include/EnergyItem_A.h"
+#include "IAR/include/EnergyItem_B.h"
 #include "World/GateObject.h"
 #include "World/SwitchObject.h"
 #include "World/MovableObject.h"
@@ -13,36 +15,38 @@ int PhysicalObjectFactory::_nextId = 0;
 void PhysicalObjectFactory::makeObject( int type )
 {
     int id = PhysicalObjectFactory::getNextId();
-    
+
 	std::string s = "";
 	std::stringstream out;
 	out << id;
-    
-    s = "physicalObject[";
-	s += out.str();
-	s += "].type";
-	if ( gProperties.hasProperty( s ) )
-	{
-		convertFromString<int>(type, gProperties.getProperty( s ), std::dec);
-	}
-	else
-	{
-        if ( gVerbose )
-            std::cerr << "[MISSING] PhysicalObjectFactory: object #" << id << ", type is missing. Assume type "<< gPhysicalObjectDefaultType << "." << std::endl;
-        type = gPhysicalObjectDefaultType;
-	}
-    
+
+  // s = "physicalObject[";
+	// s += out.str();
+	// s += "].type";
+	// if ( gProperties.hasProperty( s ) )
+	// {
+	// 	convertFromString<int>(type, gProperties.getProperty( s ), std::dec);
+	// }
+	// else
+	// {
+  //       if ( gVerbose )
+  //           std::cerr << "[MISSING] PhysicalObjectFactory: object #" << id << ", type is missing. Assume type "<< gPhysicalObjectDefaultType << "." << std::endl;
+  //       type = gPhysicalObjectDefaultType;
+	// }
+
     switch ( type )
     {
         case 0:
             if ( gVerbose )
                 std::cout << "[INFO] Round Object created (type = " << type << ").\n";
-            gPhysicalObjects.push_back( new RoundObject(id) );
+            // gPhysicalObjects.push_back( new EnergyItem_A(id) );
+            gPhysicalObjects.push_back( new EnergyItem_A(id) );
             break;
         case 1:
             if ( gVerbose )
                 std::cout << "[INFO] Energy Item created (type = " << type << ").\n";
-            gPhysicalObjects.push_back( new EnergyItem(id) );
+            // gPhysicalObjects.push_back( new EnergyItem_B(id) );
+            gPhysicalObjects.push_back( new EnergyItem_B(id) );
             break;
         case 2:
             if ( gVerbose )

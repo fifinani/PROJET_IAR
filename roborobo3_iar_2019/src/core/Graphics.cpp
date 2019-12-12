@@ -26,7 +26,7 @@ void saveImage ( SDL_Surface *image, std::string __prefix, std::string __comment
 
 	if ( __comment != "" )
 		sLog += "_" + __comment;
-	
+
     if ( gOutputImageFormat == true )
     {
         sLog += ".bmp";
@@ -42,18 +42,18 @@ void saveImage ( SDL_Surface *image, std::string __prefix, std::string __comment
 void saveCustomScreenshot ( std::string __comment )
 {
     //std::cout << "[DEBUG] saveCustomScreenshot: WORK IN PROGRESS!" << std::endl;
-    
+
     // preparing
-    
+
     std::string snapshotIndexStr = convertToString(gSnapshotIndex);
-    
+
     while( snapshotIndexStr.length() < 6 )
     {
         snapshotIndexStr =  "0" + snapshotIndexStr;
     }
-    
+
     // rendering
-    
+
     SDL_FillRect( gSnapshot, &gSnapshot->clip_rect, SDL_MapRGBA( gSnapshot->format, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE ) ); // clear screen
 
     if ( gCustomSnapshot_niceRendering == true )
@@ -75,14 +75,14 @@ void saveCustomScreenshot ( std::string __comment )
             if ( gLandmarks[i]->isVisible() )
                 gLandmarks[i]->show(gSnapshot);
     }
-    
+
     if ( gCustomSnapshot_showObjects == true )
     {
         for ( int i = 0 ; i != gNbOfPhysicalObjects ; i++ )
             if ( gPhysicalObjects[i]->isVisible() )
                 gPhysicalObjects[i]->show(gSnapshot);
     }
-    
+
     if ( gCustomSnapshot_showRobots == true )
     {
         int backupDisplaySensorsValue = gDisplaySensors;
@@ -97,11 +97,11 @@ void saveCustomScreenshot ( std::string __comment )
         }
         gDisplaySensors = backupDisplaySensorsValue;
     }
-    
+
     // saving
-    
+
     saveImage(gSnapshot,"screenshot_custom",snapshotIndexStr+"_"+__comment);
-    
+
     gSnapshotIndex++;
 }
 
@@ -115,7 +115,7 @@ void saveTrajectoryImage ( std::string __comment )
         {
             trajectoryFileIndexStr =  "0" + trajectoryFileIndexStr;
         }
-        
+
         std::string timestamp = convertToString(gTrajectoryMonitorIt);
         //while( timestamp.length() < 10 )
         //{
@@ -124,22 +124,22 @@ void saveTrajectoryImage ( std::string __comment )
         timestamp = "_it" + timestamp;
 
         std::string s = trajectoryFileIndexStr;
-        
+
         if ( gTrajectoryMonitorMode == 0 )
             s += timestamp + "_all";
         else
             s += timestamp + "_single";
-        
+
         if ( __comment != "" )
             s += "_" + __comment;
-        
+
         saveImage(gTrajectoryMonitorImage,"trajectory",s);
-        
+
         SDL_FreeSurface( gTrajectoryMonitorImage );
         gTrajectoryMonitor = false;
-        
+
         gTrajectoryFileIndex++;
-        
+
     }
     else
     {
@@ -150,12 +150,12 @@ void saveTrajectoryImage ( std::string __comment )
 void saveRenderScreenshot( std::string __comment) // parameter is optional
 {
     std::string screenShotIndexStr = convertToString(gRenderScreenshotIndex);
-    
+
     while( screenShotIndexStr.length() < 6 )
     {
         screenShotIndexStr =  "0" + screenShotIndexStr;
     }
-    
+
     saveImage(gScreen,"screenshot_render",screenShotIndexStr+"_"+__comment);
 
     gRenderScreenshotIndex++;
@@ -164,7 +164,7 @@ void saveRenderScreenshot( std::string __comment) // parameter is optional
 void saveFullLoggerScreenshot( std::string __comment) // parameter is optional
 {
     std::string screenShotIndexStr = convertToString(gFullLoggerScreenshotIndex);
-    
+
     while( screenShotIndexStr.length() < 9 )
     {
         screenShotIndexStr =  "0" + screenShotIndexStr;
@@ -173,34 +173,34 @@ void saveFullLoggerScreenshot( std::string __comment) // parameter is optional
     std::string comment = "";
     if ( __comment != "" )
         comment += "_" + __comment;
-    
+
     if ( gDisplayMode != 2 )
         saveImage(gScreen,"fullLogger_gScreen",screenShotIndexStr+comment);
-    
+
     saveImage(gEnvironmentImage,"fullLogger_gEnvironmentImage",screenShotIndexStr+comment);
     saveImage(gFootprintImage,"fullLogger_gFootprintImage",screenShotIndexStr+comment);
-    
+
     std::string filename = gLogDirectoryname + "/fullLogger_" + gStartTime + "_" + getpidAsReadableString() + "_" + screenShotIndexStr + comment + ".txt";
 
     std::ofstream file;
     file.open(filename.c_str());
-    
+
     if(!file) {
         std::cout << "[error] Cannot open Full Logger text file " << std::endl;
         exit (-1);
     }
-    
+
     std::string s = "### ### ###\n### Full logger\n\n### ### ###\n";
-    
+
     s += "#\n#\n# Robots\n";
     s += "#\n# id, x, y, orientation, groupId, LED_redValue, LED_greenValue, LED_blueValue, energyLevel, isAlive, isRegistered\n";
     s += "#\n#\n";
-   
+
     for ( int i = 0 ; i < gNbOfRobots ; i++ )
     {
         int x,y;
         gRobots[i]->getCoord(x, y);
-        
+
         std::stringstream out;
         out << gRobots[i]->getWorldModel()->getId();
         out << ",";
@@ -226,11 +226,11 @@ void saveFullLoggerScreenshot( std::string __comment) // parameter is optional
         out << "\n";
         s += out.str();
     }
-    
+
     s += "### ### ###\n#\n# Physical Objects\n";
     s += "#\n# id, x, y, isVisible\n";
     s += "#\n#\n";
-    
+
     for ( int i = 0 ; i < gNbOfPhysicalObjects ; i++ )
     {
         std::stringstream out;
@@ -261,7 +261,7 @@ void saveFullLoggerScreenshot( std::string __comment) // parameter is optional
         out << "\n";
         s += out.str();
     }
-    
+
     file << s;
 
     file.close();
@@ -273,40 +273,40 @@ void saveFullLoggerScreenshot( std::string __comment) // parameter is optional
 void saveEnvironmentScreenshot( std::string __comment) // parameter is optional
 {
     std::string str = convertToString(gEnvironmentScreenshotIndex);
-    
+
     while( str.length() < 6 )
     {
         str =  "0" + str;
     }
-    
+
     saveImage(gEnvironmentImage,"screenshot_environment",str+"_"+__comment);
-    
+
 	gEnvironmentScreenshotIndex++;
 }
 
 void saveFootprintScreenshot( std::string __comment) // parameter is optional
 {
     std::string str = convertToString(gFootprintScreenshotIndex);
-    
+
     while( str.length() < 6 )
     {
         str =  "0" + str;
     }
-    
+
     saveImage(gFootprintImage,"screenshot_footprint",str+"_"+__comment);
-    
+
     gFootprintScreenshotIndex++;
 }
 
 
 bool initSDL(Uint32 flags) // parameter is optional (default: SDL_HWSURFACE | SDL_DOUBLEBUF)
 {
-    
+
     if ( gBatchMode )
     {
             gDisplayMode = 2;
     }
-	
+
     //Initialize all SDL subsystems
     if( SDL_Init( SDL_INIT_EVERYTHING ) < 0 )
     {
@@ -331,13 +331,13 @@ bool initSDL(Uint32 flags) // parameter is optional (default: SDL_HWSURFACE | SD
                                     0x0000FF00,
                                     0x000000FF,
                                     0xFF000000);
-    
+
     if( gScreen == NULL ) // error?
     {
         std::cerr << "[CRITICAL] Failed to create screen surface (gScreen). Stop.\n";
         return false;
     }
-    
+
     gSnapshot = SDL_CreateRGBSurface (
                                     0, // flags (unused)
                                     gScreenWidth,
@@ -347,13 +347,13 @@ bool initSDL(Uint32 flags) // parameter is optional (default: SDL_HWSURFACE | SD
                                     0x0000FF00,
                                     0x000000FF,
                                     0xFF000000);
-    
+
     if( gScreen == NULL ) // error?
     {
         std::cerr << "[CRITICAL] Failed to create snapshot surface (gSnapshot). Stop.\n";
         return false;
     }
-    
+
     if ( !gBatchMode )
     {
         gScreenRenderer = SDL_CreateRenderer(gScreenWindow, -1, SDL_RENDERER_ACCELERATED);
@@ -363,7 +363,7 @@ bool initSDL(Uint32 flags) // parameter is optional (default: SDL_HWSURFACE | SD
                                        SDL_TEXTUREACCESS_STREAMING,
                                        gScreenWidth, gScreenHeight);
     }
-    
+
     return true;
 }
 
@@ -371,11 +371,11 @@ void apply_surface( int x, int y, SDL_Surface* source, SDL_Surface* destination 
 {
     //Holds offsets
     SDL_Rect offset;
-    
+
     //Get offsets
     offset.x = x;
     offset.y = y;
-    
+
     //Blit
     SDL_BlitSurface( source, clip, destination, &offset );
 }
@@ -419,14 +419,14 @@ void register_robotMask( int __x, int __y, SDL_Surface* destination , int __id )
 void clean_robotMask( int __x, int __y, SDL_Surface* destination ) // last argument is optional (cf. function header)
 {
     //std::cout << "gRobotMaskData.size() => " << gRobotMaskData.size() << std::endl;
-    
+
     for ( unsigned int i = 0 ; i != gRobotMaskData.size() ; i++ )
     {
         int x = __x + gRobotMaskData[i][0];
         int y = __y + gRobotMaskData[i][1];
-        
+
         //std::cout << "coordinates: " << x << " , " << y << std::endl;
-        
+
         putPixel32( destination, x, y, SDL_MapRGBA( destination->format, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE ) );
     }
 }
@@ -446,33 +446,33 @@ void toggle_fullscreen()
 	clean_up();
 
 	gFullScreenMode= !gFullScreenMode;
-	
+
 	if( initSDL(SDL_HWSURFACE | SDL_DOUBLEBUF | (gFullScreenMode?SDL_FULLSCREEN:0) ) == false )
     {
 		std::cerr << "fullscreen error 1 (toggling fullscreen) \n";
 		exit(-2);
 	}
-    
+
     if( gWorld->loadFiles() == false ) // note: if this block is removed, computer may hang. + gWorld is not in the scope
     {
 		std::cerr << "fullscreeen error 2 (re-loading files) \n";
 		exit(-2);
 	}
- 
+
 	//if (SDL_WM_ToggleFullScreen(gScreen) == 0)
 	*/
 }
 
 
-SDL_Surface *load_image( std::string filename ) 
+SDL_Surface *load_image( std::string filename )
 {
     SDL_Surface* loadedImage = NULL;
     SDL_Surface* optimizedImage = NULL;
-    
+
     //loadedImage = IMG_Load( filename.c_str() );
-    
+
     loadedImage = SDL_LoadBMP( filename.c_str() );
-    
+
     if( loadedImage != NULL )
     {
         //If the image was successfully loaded, then convert color scheme to match 32-bits-ARGB (if needed)
@@ -482,13 +482,12 @@ SDL_Surface *load_image( std::string filename )
         else
         {
             std::cout << "[INFO] file \"" << filename << "\" not in 32-bits-ARGB format. Converting." << std::endl;
-            
             optimizedImage = SDL_ConvertSurfaceFormat( loadedImage, SDL_PIXELFORMAT_ARGB8888, 0 ); // SDL_PIXELFORMAT_ARGB8888
             SDL_FreeSurface( loadedImage );
-            
+
             return optimizedImage;
         }
-    
+
     }
     else
     {
@@ -511,24 +510,24 @@ void drawLine(SDL_Surface * image,
                uint8_t r, uint8_t g, uint8_t b )
 {
     uint32_t color = SDL_MapRGBA( image->format, r, g, b, SDL_ALPHA_OPAQUE );
-    
+
     int delta_x(x2 - x1);
     // if x1 == x2, then it does not matter what we set here
     signed char const ix((delta_x > 0) - (delta_x < 0));
     delta_x = std::abs(delta_x) << 1;
-    
+
     int delta_y(y2 - y1);
     // if y1 == y2, then it does not matter what we set here
     signed char const iy((delta_y > 0) - (delta_y < 0));
     delta_y = std::abs(delta_y) << 1;
-    
+
     putPixel32_secured( image, x1, y1 , color );
-    
+
     if (delta_x >= delta_y)
     {
         // error may go below zero
         int error(delta_y - (delta_x >> 1));
-        
+
         while (x1 != x2)
         {
             if ((error >= 0) && (error || (ix > 0)))
@@ -537,10 +536,10 @@ void drawLine(SDL_Surface * image,
                 y1 += iy;
             }
             // else do nothing
-            
+
             error += delta_y;
             x1 += ix;
-            
+
             putPixel32_secured( image, x1, y1 , color );
         }
     }
@@ -548,7 +547,7 @@ void drawLine(SDL_Surface * image,
     {
         // error may go below zero
         int error(delta_x - (delta_y >> 1));
-        
+
         while (y1 != y2)
         {
             if ((error >= 0) && (error || (iy > 0)))
@@ -557,10 +556,10 @@ void drawLine(SDL_Surface * image,
                 x1 += ix;
             }
             // else do nothing
-            
+
             error += delta_x;
             y1 += iy;
-            
+
             putPixel32_secured( image, x1, y1 , color );
         }
     }
@@ -579,19 +578,19 @@ bool castLine(SDL_Surface * image,
 {
     int x2 = *x2pt;
     int y2 = *y2pt;
-    
+
     uint32_t color = SDL_MapRGBA( image->format, 0xFF, 0xFF, 0xFF, SDL_ALPHA_OPAQUE );
-    
+
     int delta_x(x2 - x1);
     // if x1 == x2, then it does not matter what we set here
     signed char const ix((delta_x > 0) - (delta_x < 0));
     delta_x = std::abs(delta_x) << 1;
-    
+
     int delta_y(y2 - y1);
     // if y1 == y2, then it does not matter what we set here
     signed char const iy((delta_y > 0) - (delta_y < 0));
     delta_y = std::abs(delta_y) << 1;
-    
+
     int dist = 0; // distance to obstacle (or to max_length)
 
     if ( getPixel32( image, x1, y1 ) != color )
@@ -605,7 +604,7 @@ bool castLine(SDL_Surface * image,
     {
         // error may go below zero
         int error(delta_y - (delta_x >> 1));
-        
+
         while (x1 != x2)
         {
             if ((error >= 0) && (error || (ix > 0)))
@@ -614,10 +613,10 @@ bool castLine(SDL_Surface * image,
                 y1 += iy;
             }
             // else do nothing
-            
+
             error += delta_y;
             x1 += ix;
-            
+
             dist++;
 
             if ( getPixel32( image, x1, y1 ) != color )
@@ -626,14 +625,14 @@ bool castLine(SDL_Surface * image,
                 *y2pt = y1;
                 return true;
             }
-            
+
         }
     }
     else
     {
         // error may go below zero
         int error(delta_x - (delta_y >> 1));
-        
+
         while (y1 != y2)
         {
             if ((error >= 0) && (error || (iy > 0)))
@@ -642,10 +641,10 @@ bool castLine(SDL_Surface * image,
                 x1 += ix;
             }
             // else do nothing
-            
+
             error += delta_x;
             y1 += iy;
-            
+
             dist++;
 
             if ( getPixel32( image, x1, y1 ) != color )
@@ -656,6 +655,6 @@ bool castLine(SDL_Surface * image,
             }
         }
     }
-    
+
     return false; // no collision
 }

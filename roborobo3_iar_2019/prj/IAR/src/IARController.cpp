@@ -10,7 +10,7 @@
 #include "World/World.h"
 
 // Load readable sensor names
-#define NB_SENSORS 12 // should be coherent with gRobotSpecsImageFilename value read from the property file.
+#define NB_SENSORS 8 // should be coherent with gRobotSpecsImageFilename value read from the property file.
 #include "Utilities/Sensorbelt.h"
 
 /* **** **** **** */
@@ -110,12 +110,12 @@ int IARController::objective(){
     return choice;
   }
 }
-
+*/
 void IARController::explore(){
   _wm->_desiredRotationalVelocity = 0;
   double r = rand();
-  if(rand < 0.01){
-    if(rand < 0.005){
+  if(r < 0.01){
+    if(r < 0.005){
       target_orientation = _wm->_agentAbsoluteOrientation + 30;
     }else{
       target_orientation = _wm->_agentAbsoluteOrientation - 30;
@@ -127,7 +127,7 @@ void IARController::explore(){
       _wm->_desiredRotationalVelocity = -10;
 }
 
-*/
+
 void IARController::goToA(){
   _wm->_desiredRotationalVelocity = 0;
   target_orientation = 0;
@@ -196,7 +196,7 @@ void IARController::reset()
 // called at everytime step. Each robot is called once per timestep, but order of call always change from step to step. This is *the* function (and possibly the only one, in most case) you have to change.
 void IARController::step()
 {
-  _wm->_desiredTranslationalValue = DISTANCE_PER_CYCLE;
+  _wm->_desiredTranslationalValue = 50*DISTANCE_PER_CYCLE;
   int target = objective();
   if(target == 0)
     goToA();

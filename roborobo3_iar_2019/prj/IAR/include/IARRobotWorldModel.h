@@ -8,8 +8,8 @@
  */
 
 
-#ifndef ROBOTAGENTWORLDMODEL_H
-#define ROBOTAGENTWORLDMODEL_H
+#ifndef IARROBOTAGENTWORLDMODEL_H
+#define IARROBOTAGENTWORLDMODEL_H
 
 extern double gEnergyMax;
 extern int gSensorRange;
@@ -29,7 +29,7 @@ class World;
 
 typedef boost::multi_array<double, 2> sensor_array;
 
-class RobotWorldModel : public WorldModel
+class IARRobotWorldModel : public WorldModel
 {
 protected:
     int _groupId; // the robot belongs to a group (default: group #0)
@@ -44,7 +44,8 @@ protected:
     double _landmarkDirectionAngleValue; // angle to closest landmark -- normalized btw -1 and +1
     double _landmarkDistanceValue ; // distance to the closest landmark -- normalized btw 0  and 1
 
-    double _energyLevel;
+    double _energyLevel_A;
+    double _energyLevel_B;
 
     double _energyRequestValue; // what the robot wants from an energy point (in [0..1]). Remarks: a robot may not get what it wants (e.g. want 1, get 0 ; want 0, get 100)
 
@@ -102,8 +103,8 @@ public:
     double _fitnessValue; // optional
 
 	// * Initializes the variables
-    RobotWorldModel();
-    virtual ~RobotWorldModel();
+    IARRobotWorldModel();
+    virtual ~IARRobotWorldModel();
 
     // * other methods
 
@@ -197,27 +198,50 @@ public:
     void setLandmarkDirectionAngleValue( double value ) { _landmarkDirectionAngleValue = value; }
     void setLandmarkDistanceValue( double value ) { _landmarkDistanceValue = value; }
 
-    double getEnergyLevel() { return _energyLevel; }
-    void setEnergyLevel( double __value )
+    double getEnergyLevel_A() { return _energyLevel_A; }
+    double getEnergyLevel_B() { return _energyLevel_B; }
+    void setEnergyLevel_A( double __value )
     {
-        _energyLevel = __value;
-        if ( _energyLevel < 0 )
-            _energyLevel = 0  ;
+        _energyLevel_A = __value;
+        if ( _energyLevel_A < 0 )
+            _energyLevel_A = 0  ;
         else
-            if ( _energyLevel > gEnergyMax )
-                _energyLevel = gEnergyMax;
+            if ( _energyLevel_A > gEnergyMax )
+                _energyLevel_A = gEnergyMax;
     }
-    void addEnergy( double __value )
+    void setEnergyLevel_B( double __value )
     {
-        _energyLevel += __value;
-        if ( _energyLevel > gEnergyMax )
-            _energyLevel = gEnergyMax;
+        _energyLevel_B = __value;
+        if ( _energyLevel_B < 0 )
+            _energyLevel_B = 0  ;
+        else
+            if ( _energyLevel_B > gEnergyMax )
+                _energyLevel_B = gEnergyMax;
     }
-    void substractEnergy( double __value )
+
+    void addEnergy_A( double __value )
     {
-        _energyLevel -= __value;
-        if ( _energyLevel < 0 )
-            _energyLevel = 0;
+        _energyLevel_A += __value;
+        if ( _energyLevel_A > gEnergyMax )
+            _energyLevel_A = gEnergyMax;
+    }
+    void addEnergy_B( double __value )
+    {
+        _energyLevel_B += __value;
+        if ( _energyLevel_B > gEnergyMax )
+            _energyLevel_B = gEnergyMax;
+    }
+    void substractEnergy_A( double __value )
+    {
+        _energyLevel_A -= __value;
+        if ( _energyLevel_A < 0 )
+            _energyLevel_A = 0;
+    }
+    void substractEnergy_B( double __value )
+    {
+        _energyLevel_B -= __value;
+        if ( _energyLevel_B < 0 )
+            _energyLevel_B = 0;
     }
 
     double getEnergyRequestValue() // when asked, should return how much energy is requested from the robot (between 0 and 1 -- this is guaranteed)
@@ -245,52 +269,7 @@ public:
     {
         return ( _groupId );
     }
-    
-    virtual double getEnergyLevel_A() { return _energyLevel; }
-    virtual double getEnergyLevel_B() { return _energyLevel; }
-    virtual void setEnergyLevel_A( double __value )
-    {
-        _energyLevel = __value;
-        if ( _energyLevel < 0 )
-            _energyLevel = 0  ;
-        else
-            if ( _energyLevel > gEnergyMax )
-                _energyLevel = gEnergyMax;
-    }
-    virtual void setEnergyLevel_B( double __value )
-    {
-        _energyLevel = __value;
-        if ( _energyLevel < 0 )
-            _energyLevel = 0  ;
-        else
-            if ( _energyLevel > gEnergyMax )
-                _energyLevel = gEnergyMax;
-    }
 
-    virtual void addEnergy_A( double __value )
-    {
-        _energyLevel += __value;
-        if ( _energyLevel > gEnergyMax )
-            _energyLevel = gEnergyMax;
-    }
-    virtual void addEnergy_B( double __value )
-    {
-        _energyLevel += __value;
-        if ( _energyLevel > gEnergyMax )
-            _energyLevel = gEnergyMax;
-    }
-    virtual void substractEnergy_A( double __value )
-    {
-        _energyLevel -= __value;
-        if ( _energyLevel < 0 )
-            _energyLevel = 0;
-    }
-    virtual void substractEnergy_B( double __value )
-    {
-        _energyLevel -= __value;
-        if ( _energyLevel < 0 )
-            _energyLevel = 0;
-    }
 
 };
 
