@@ -72,7 +72,6 @@ void EnergyItem_A::isTouched( int __idAgent )
 
 void EnergyItem_A::isWalked( int __idAgent )
 {
-  std::cout << "walked " <<std::endl;
     gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_A( A_A );
     gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_B( A_B );
 

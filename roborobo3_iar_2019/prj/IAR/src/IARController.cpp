@@ -3,11 +3,15 @@
  * 2018-10-18
  */
 
+ #include <iostream>
+ #include <fstream>
+ #include <string>
 
 #include "IAR/include/IARController.h"
 #include "WorldModels/RobotWorldModel.h"
 #include "RoboroboMain/roborobo.h"
 #include "World/World.h"
+
 
 // Load readable sensor names
 #define NB_SENSORS 8 // should be coherent with gRobotSpecsImageFilename value read from the property file.
@@ -132,7 +136,7 @@ int IARController::objective(){
 void IARController::explore(){
   _wm->_desiredRotationalVelocity = 0;
   double r = (double)rand()/(double)RAND_MAX;
-  std::cout << r << std::endl;
+  // std::cout << r << std::endl;
   if(r < 0.01){
     if(r < 0.005){
       target_orientation = _wm->_agentAbsoluteOrientation + 30;
@@ -144,7 +148,7 @@ void IARController::explore(){
       _wm->_desiredRotationalVelocity = +10;
   else if( target_orientation - _wm->_agentAbsoluteOrientation > 0 )
       _wm->_desiredRotationalVelocity = -10;
-  _wm->_agentAbsoluteOrientation = -90;
+
 }
 
 void IARController::goToA(){
@@ -157,6 +161,7 @@ void IARController::goToA(){
       _wm->_desiredRotationalVelocity = -10;
   else if( angleToA > 0 )
       _wm->_desiredRotationalVelocity = 10;
+  // _wm->_agentAbsoluteOrientation = _wm->_agentAbsoluteOrientation + angleToA;
 }
 
 void IARController::goToB(){
@@ -169,6 +174,8 @@ void IARController::goToB(){
       _wm->_desiredRotationalVelocity = -10;
   else if( angleToB > 0 )
       _wm->_desiredRotationalVelocity = 10;
+  // _wm->_agentAbsoluteOrientation = _wm->_agentAbsoluteOrientation + angleToB;
+
 }
 
 double IARController::getDistance_A(){
@@ -341,7 +348,6 @@ void IARController::step()
     explore();
   updateValue();
   toroidaliter();
-  nbr_iteration++;
   // std::cout <<
   // "Energy A : " << _wm->getEnergyLevel_A() <<
   // "\nEnergyB : " << _wm->getEnergyLevel_B() <<
@@ -357,8 +363,14 @@ void IARController::step()
   // }
   // std::cout << std::endl;
   if(_wm->getEnergyLevel_A() == 0 || _wm->getEnergyLevel_B() == 0){
-    std::cout << "MORT" << nbr_iteration++ << std::endl;
+    std::cout << "MORT" << nbr_iteration << std::endl;
+    std::ofstream fichier;
+    fichier.open("resultat_"+std::to_string(ALossPerCycle)+".txt", std::ios::out | std::ios::app);
+    fichier << nbr_iteration << std::endl;
+    fichier.close();
+    exit(0);
   }else{
+    nbr_iteration++;
     // std::cout <<
     // "Energy A : " << _wm->getEnergyLevel_A() <<
     // "\nEnergyB : " << _wm->getEnergyLevel_B() <<std::endl;
