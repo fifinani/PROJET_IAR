@@ -9,8 +9,6 @@
 #include "IAR/include/Variables.h"
 #include "World/PhysicalObject.h"
 
-#undef RAND_MAX
-#define RAND_MAX 1
 
 
 class RobotWorldModel;

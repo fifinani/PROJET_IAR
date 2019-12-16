@@ -131,7 +131,8 @@ int IARController::objective(){
 */
 void IARController::explore(){
   _wm->_desiredRotationalVelocity = 0;
-  double r = rand();
+  double r = (double)rand()/(double)RAND_MAX;
+  std::cout << r << std::endl;
   if(r < 0.01){
     if(r < 0.005){
       target_orientation = _wm->_agentAbsoluteOrientation + 30;
