@@ -132,19 +132,16 @@ int IARController::objective(){
 void IARController::explore(){
   _wm->_desiredRotationalVelocity = 0;
   double r = (double)rand()/(double)RAND_MAX;
-  std::cout << r << std::endl;
+
   if(r < 0.01){
     if(r < 0.005){
-      target_orientation = _wm->_agentAbsoluteOrientation + 30;
+      _wm->_agentAbsoluteOrientation = _wm->_agentAbsoluteOrientation + 30;
     }else{
-      target_orientation = _wm->_agentAbsoluteOrientation - 30;
+      _wm->_agentAbsoluteOrientation = _wm->_agentAbsoluteOrientation - 30;
     }
   }
-  if ( target_orientation - _wm->_agentAbsoluteOrientation < 0 )
-      _wm->_desiredRotationalVelocity = +10;
-  else if( target_orientation - _wm->_agentAbsoluteOrientation > 0 )
-      _wm->_desiredRotationalVelocity = -10;
-  _wm->_agentAbsoluteOrientation = -90;
+  std::cout << _wm->_agentAbsoluteOrientation << std::endl;
+  //_wm->_agentAbsoluteOrientation = -90;
 }
 
 void IARController::goToA(){
