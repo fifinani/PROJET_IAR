@@ -30,7 +30,7 @@ class IARController : public Controller
 		int _directionY_A = 0;
 		int _directionX_B = 0;
 		int _directionY_B = 0;
-
+		int vdgdgdg = 0;
 		int nbr_iteration = 0;
 
 		double ALossPerCycle;
