@@ -4,6 +4,7 @@
 #include "IAR/include/IARWorldObserver.h"
 #include "IAR/include/IARAgentObserver.h"
 #include "IAR/include/IARController.h"
+#include "IAR/include/IARRobotWorldModel.h"
 #include "WorldModels/RobotWorldModel.h"
 
 
@@ -24,7 +25,7 @@ WorldObserver* IARConfigurationLoader::make_WorldObserver(World* wm)
 
 RobotWorldModel* IARConfigurationLoader::make_RobotWorldModel()
 {
-	return new RobotWorldModel();
+	return new IARRobotWorldModel();
 }
 
 AgentObserver* IARConfigurationLoader::make_AgentObserver(RobotWorldModel* wm)

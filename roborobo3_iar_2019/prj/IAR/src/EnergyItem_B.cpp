@@ -65,22 +65,11 @@ void EnergyItem_B::isTouched( int __idAgent )
 
 void EnergyItem_B::isWalked( int __idAgent )
 {
-//    if ( gVerbose && gDisplayMode <= 1)
-//        std::cout << "[DEBUG] Physical object #" << this->getId() << " (energy item) walked upon by robot #" << __idAgent << std::endl;
+    gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_B( B_B );
+    gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_B( B_A );
 
-    double energyRequestedValueByRobot;
-    double energyProvided;
-
-    switch ( energyMode )
-    {
-        case 0: // give all
-            gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_B( maxEnergyLevel );
-            std::cout << "add energy B " << std::endl;
-            // gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_A( maxEnergyLevel );
-            regrowTime = -1;
-            break;
-    }
-
+    regrowTime = 100;
+    relocate();
     unregisterObject();
     registered = false;
     hide();

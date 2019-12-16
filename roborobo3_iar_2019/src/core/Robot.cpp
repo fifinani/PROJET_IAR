@@ -569,60 +569,60 @@ void Robot::move( int __recursiveIt ) // the interface btw agent and world -- in
 
 	// * collision with (image) border of the environment - position at border, then bounce
 
-	if ( isCollision() )
-	{
-        _wm->_desiredTranslationalValue = 0; // cancel any translation order as agent translation speed is set to zero after collision. (note that rotation is still ok)
-
-		if (_wm->_agentAbsoluteLinearSpeed >= 1.0 )
-		{
-			_wm->_agentAbsoluteLinearSpeed--;
-		}
-		else
-		{
-			if ( _wm->_agentAbsoluteLinearSpeed <= -1.0 )
-				_wm->_agentAbsoluteLinearSpeed++;
-		}
-
-		if ( ( _wm->_agentAbsoluteLinearSpeed > -1.0 ) && ( _wm->_agentAbsoluteLinearSpeed < 1.0 ) )
-		{
-			_wm->_agentAbsoluteLinearSpeed = 0; // roborobo assumes pixel-based resolution for solving collision. Ie. ignore sub-pixel translation values. (see _README.TXT for details)
-		}
-
-		_wm->_xReal=xReal_old;
-		_wm->_yReal=yReal_old;
-
-		if (_wm->_agentAbsoluteLinearSpeed != 0 ) // if zero: move is canceled
-		{
-			__recursiveIt++;
-			move(__recursiveIt);
-		}
-		else
-		{
-			// special case: agent cannot not move at all - restore original coordinate (remember, _x/yReal are global and modified during recursive call).
-			_wm->_xReal=xReal_old;
-			_wm->_yReal=yReal_old;
-			//setCoord((int)_wm->_xReal+0.5,(int)_wm->_yReal+0.5); // !n : 2018-07-23 -- original
-            setCoord((int)(_wm->_xReal+0.5),(int)(_wm->_yReal+0.5)); // !n : 2018-07-23
-		}
-
-		// update world model variables and internal data
-
-		_wm->_agentAbsoluteLinearSpeed = 0;
-
-		if ( gLocomotionMode == 1 ) // consider obstacle friction or not for rotation?
-		{
-			_wm->_agentAbsoluteOrientation = _lastAgentAbsoluteOrientation;
-			_wm->_actualRotationalVelocity = 0;
-		}
-		else
-			_wm->_actualRotationalVelocity = _wm->_desiredRotationalVelocity;
-
-		//_wm->_desiredTranslationalValue = _wm->_desiredRotationalVelocity = 0;
-		_wm->_actualTranslationalValue = 0;
-
-	}
-	else
-    {
+	// if ( isCollision() )
+	// {
+  //       _wm->_desiredTranslationalValue = 0; // cancel any translation order as agent translation speed is set to zero after collision. (note that rotation is still ok)
+	//
+	// 	if (_wm->_agentAbsoluteLinearSpeed >= 1.0 )
+	// 	{
+	// 		_wm->_agentAbsoluteLinearSpeed--;
+	// 	}
+	// 	else
+	// 	{
+	// 		if ( _wm->_agentAbsoluteLinearSpeed <= -1.0 )
+	// 			_wm->_agentAbsoluteLinearSpeed++;
+	// 	}
+	//
+	// 	if ( ( _wm->_agentAbsoluteLinearSpeed > -1.0 ) && ( _wm->_agentAbsoluteLinearSpeed < 1.0 ) )
+	// 	{
+	// 		_wm->_agentAbsoluteLinearSpeed = 0; // roborobo assumes pixel-based resolution for solving collision. Ie. ignore sub-pixel translation values. (see _README.TXT for details)
+	// 	}
+	//
+	// 	_wm->_xReal=xReal_old;
+	// 	_wm->_yReal=yReal_old;
+	//
+	// 	if (_wm->_agentAbsoluteLinearSpeed != 0 ) // if zero: move is canceled
+	// 	{
+	// 		__recursiveIt++;
+	// 		move(__recursiveIt);
+	// 	}
+	// 	else
+	// 	{
+	// 		// special case: agent cannot not move at all - restore original coordinate (remember, _x/yReal are global and modified during recursive call).
+	// 		_wm->_xReal=xReal_old;
+	// 		_wm->_yReal=yReal_old;
+	// 		//setCoord((int)_wm->_xReal+0.5,(int)_wm->_yReal+0.5); // !n : 2018-07-23 -- original
+  //           setCoord((int)(_wm->_xReal+0.5),(int)(_wm->_yReal+0.5)); // !n : 2018-07-23
+	// 	}
+	//
+	// 	// update world model variables and internal data
+	//
+	// 	_wm->_agentAbsoluteLinearSpeed = 0;
+	//
+	// 	if ( gLocomotionMode == 1 ) // consider obstacle friction or not for rotation?
+	// 	{
+	// 		_wm->_agentAbsoluteOrientation = _lastAgentAbsoluteOrientation;
+	// 		_wm->_actualRotationalVelocity = 0;
+	// 	}
+	// 	else
+	// 		_wm->_actualRotationalVelocity = _wm->_desiredRotationalVelocity;
+	//
+	// 	//_wm->_desiredTranslationalValue = _wm->_desiredRotationalVelocity = 0;
+	// 	_wm->_actualTranslationalValue = 0;
+	//
+	// }
+	// else
+  //   {
         // actual rotational and translational values matches desired values
         _wm->_actualRotationalVelocity = _wm->_desiredRotationalVelocity;
         _wm->_actualTranslationalValue = _wm->_agentAbsoluteLinearSpeed; // (!) _wm->_desiredTranslationalValue is different as the "desired" translation speed may not be reached due to physical actuator limitations
@@ -656,7 +656,7 @@ void Robot::move( int __recursiveIt ) // the interface btw agent and world -- in
         _wm->_groundSensorValue[0] = r;
         _wm->_groundSensorValue[1] = g;
         _wm->_groundSensorValue[2] = b;
-    }
+    // }
 
     if ( __recursiveIt == 0 )
     {

@@ -107,7 +107,9 @@ public:
 
     // * other methods
 
-    World* getWorld(); // return pointer to the current World
+    World* getWorld(){
+      return _world;
+    } // return pointer to the current World
 
     // * sensor methods
 
@@ -245,7 +247,7 @@ public:
     {
         return ( _groupId );
     }
-    
+
     virtual double getEnergyLevel_A() { return _energyLevel; }
     virtual double getEnergyLevel_B() { return _energyLevel; }
     virtual void setEnergyLevel_A( double __value )

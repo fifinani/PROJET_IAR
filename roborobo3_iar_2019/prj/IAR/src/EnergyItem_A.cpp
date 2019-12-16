@@ -8,7 +8,7 @@
 
 EnergyItem_A::EnergyItem_A( int __id ) : CircleObject( __id ) // should only be called by PhysicalObjectFactory
 {
-    setType(1);
+    setType(0);
 
 
     if ( gProperties.hasProperty( "itemRadius" ) ){
@@ -64,22 +64,11 @@ void EnergyItem_A::isTouched( int __idAgent )
 
 void EnergyItem_A::isWalked( int __idAgent )
 {
-//    if ( gVerbose && gDisplayMode <= 1)
-//        std::cout << "[DEBUG] Physical object #" << this->getId() << " (energy item) walked upon by robot #" << __idAgent << std::endl;
+    gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_A( A_A );
+    gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_B( A_B );
 
-    double energyRequestedValueByRobot;
-    double energyProvided;
-
-    switch ( energyMode )
-    {
-        case 0: // give all
-          gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_A( maxEnergyLevel );
-          std::cout << "add energy A";
-            // gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_A( maxEnergyLevel );
-            regrowTime = -1;
-            break;
-    }
-
+    regrowTime = 100;
+    relocate();
     unregisterObject();
     registered = false;
     hide();
