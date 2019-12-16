@@ -9,7 +9,7 @@
 EnergyItem_B::EnergyItem_B( int __id ) : CircleObject( __id ) // should only be called by PhysicalObjectFactory
 {
     setType(1);
-
+    _clumpID = 0;
 
     if ( gProperties.hasProperty( "itemRadius" ) ){
       convertFromString<double>(_radius, gProperties.getProperty( "itemRadius" ), std::dec);
@@ -51,6 +51,14 @@ EnergyItem_B::EnergyItem_B( int __id ) : CircleObject( __id ) // should only be 
     this->setDisplayColor(0x0F, 0xF0, 0x0F);
 }
 
+EnergyItem_B::EnergyItem_B( int __id, int clumpId ) : EnergyItem_B(__id) // should only be called by PhysicalObjectFactory
+{
+    if(clumpId >=0){
+      _clumpID = clumpId;
+      MoveToClump(clumpId);
+    }
+}
+
 void EnergyItem_B::step()
 {
     stepPhysicalObject();
@@ -80,4 +88,22 @@ void EnergyItem_B::isPushed( int __id, std::tuple<double, double> __speed )
 {
     //    if ( gVerbose && gDisplayMode <= 1)
     //        std::cout << "[DEBUG] Physical object #" << this->getId() << " (energy item) pushed by robot/object #" << __id << std::endl;
+}
+
+void EnergyItem_B::MoveToClump(int clumpId){
+  unregisterObject();
+  do{
+    Point2d center = gClumpCenters[clumpId];
+    int dist = std::rand()%251;
+    int orientation = std::rand()%360;
+    int x = center.x + dist*cos( (double)orientation * M_PI / 180);
+    int y = center.y + dist*sin((double)orientation * M_PI / 180 );
+    if(x < 0 ){ x += gAreaWidth; }
+    else if( x > gAreaWidth ){ x-= gAreaWidth ; }
+    if(y < 0 ){ y += gAreaHeight; }
+    else if(y > gAreaHeight ){ y -= gAreaHeight ; }
+    setCoordinates( x, y );
+
+  }while(canRegister() == false);
+  registerObject();
 }

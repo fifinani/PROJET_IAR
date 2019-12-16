@@ -14,20 +14,20 @@ PhysicalObject::PhysicalObject( int __id ) // a unique and consistent __id shoul
 
     this->lastRelocationDate = gWorld->getIterations();
     //std::cout << "[DEBUG]" << lastRelocationDate << "\n";
-    
+
     init();
 }
 
 void PhysicalObject::init()
 {
     double x = 0.0, y = 0.0;
-    
+
 	std::string s = "";
 	std::stringstream out;
 	out << getId();
-    
+
     regrowTime = 0;
-    
+
     s = "physicalObject[";
 	s += out.str();
 	s += "].regrowTimeMax";
@@ -39,7 +39,7 @@ void PhysicalObject::init()
     {
         regrowTimeMax = gPhysicalObjectDefaultRegrowTimeMax;
     }
-    
+
     s = "physicalObject[";
 	s += out.str();
 	s += "].overwrite";
@@ -49,7 +49,7 @@ void PhysicalObject::init()
     {
         overwrite = gPhysicalObjectDefaultOverwrite;
     }
-    
+
     s = "physicalObject[";
 	s += out.str();
 	s += "].relocate";
@@ -59,7 +59,7 @@ void PhysicalObject::init()
     {
         relocateObject = gPhysicalObjectDefaultRelocate;
     }
-    
+
     s = "physicalObject[";
 	s += out.str();
 	s += "].visible";
@@ -67,9 +67,9 @@ void PhysicalObject::init()
         gProperties.checkAndGetPropertyValue(s,&_visible,true);
 	else
         gProperties.checkAndGetPropertyValue("gPhysicalObjectsVisible", &_visible, true);
-    
+
     Uint32 colorValue;
-    
+
     s = "physicalObject[";
 	s += out.str();
 	s += "].displayColorRed";
@@ -82,7 +82,7 @@ void PhysicalObject::init()
     {
         _displayColorRed = gPhysicalObjectDefaultDisplayColorRed; // default
     }
-    
+
     s = "physicalObject[";
 	s += out.str();
 	s += "].displayColorGreen";
@@ -95,7 +95,7 @@ void PhysicalObject::init()
     {
         _displayColorGreen = gPhysicalObjectDefaultDisplayColorGreen; // default
     }
-    
+
     s = "physicalObject[";
 	s += out.str();
 	s += "].displayColorBlue";
@@ -108,7 +108,7 @@ void PhysicalObject::init()
     {
         _displayColorBlue = gPhysicalObjectDefaultDisplayColorBlue; // default
     }
-    
+
     s = "physicalObject[";
 	s += out.str();
 	s += "].x";
@@ -120,7 +120,7 @@ void PhysicalObject::init()
 	{
         x = -1.0;
 	}
-    
+
 	s = "physicalObject[";
 	s += out.str();
 	s += "].y";
@@ -132,28 +132,28 @@ void PhysicalObject::init()
 	{
         y = -1.0;
 	}
-    
+
     setCoordinates( x, y );
 }
 
 int PhysicalObject::findRandomLocation( )
 {
     double x = 0.0, y = 0.0;
-    
+
     int tries = 0;
-    
+
     do {
         x = ( randint() % ( gPhysicalObjectsInitAreaWidth  ) ) + gPhysicalObjectsInitAreaX;
         y = ( randint() % ( gPhysicalObjectsInitAreaHeight ) ) + gPhysicalObjectsInitAreaY;
-        
+
         //x = (randint() % (gAreaWidth-20)) + 10;  // deprecated
         //y = (randint() % (gAreaHeight-20)) + 10; // deprecated
-        
+
         setCoordinates( x, y );
-        
+
         tries++;
     } while ( canRegister() == false && tries < gLocationFinderMaxNbOfTrials );
-    
+
     if ( tries == gLocationFinderMaxNbOfTrials )
     {
         if ( gLocationFinderExitOnFail == true )
@@ -168,7 +168,7 @@ int PhysicalObject::findRandomLocation( )
             setCoordinates( -1, -1 );
         }
     }
-    
+
     return tries;
 }
 
@@ -238,7 +238,7 @@ bool PhysicalObject::triggerRegrow()
         std::cerr << "[CRITICAL] physical object #" << getId() << ": attempt to call triggerRegrow() method while object already exists in the environment. EXITING.\n";
         exit(-1);
     }
-    
+
     if ( canRegister() == false ) // check is position is free.
     {
         return false;
@@ -250,7 +250,7 @@ bool PhysicalObject::triggerRegrow()
         registered = true;
         registerObject();
     }
-    
+
     return true;
 }
 
@@ -263,9 +263,9 @@ void PhysicalObject::relocate()
 {
     if ( getXCenterPixel() != -1.0 && getYCenterPixel() != -1.0 ) // if registered
         unregisterObject();
-    
+
     findRandomLocation();
-    
+
     if ( getXCenterPixel() != -1.0 && getYCenterPixel() != -1.0 ) // not registered
     {
         registerObject();
@@ -276,9 +276,9 @@ bool PhysicalObject::relocate( int x, int y )
 {
     int backup_x = getXCenterPixel();
     int backup_y = getYCenterPixel();
-    
+
     setCoordinates( x,y );
-    
+
     if ( canRegister() == true )
     {
         if ( getXCenterPixel() != -1.0 && getYCenterPixel() != -1.0 ) // if registered

@@ -14,15 +14,17 @@ class PhysicalObject;
 class PhysicalObjectFactory
 {
 	private :
+				static int _clumpId;
         static int _nextId;
-    
+
 	public :
-        static void makeObject( int type = 0 ); // default type is zero. Properties file value always override.
+				static void makeObjectNormal( int type = 0 ); // default type is zero. Properties file value always override.
+        static void makeObject( int type = 0, bool clumped = false ); // default type is zero. Properties file value always override.
         static int getNextId();
         static int getNbOfTypes();
-    
 
-	
+
+
 };
 
 #endif

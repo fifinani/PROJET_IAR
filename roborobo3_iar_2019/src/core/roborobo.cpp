@@ -325,6 +325,7 @@ Timer timeWatch;
 std::vector<Robot*> gRobots;
 std::vector<bool> gRobotsRegistry;
 
+std::vector<Point2d> gClumpCenters;
 /* ********************
  * * global functions *
  * ********************/

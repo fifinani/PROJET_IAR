@@ -61,6 +61,10 @@ World::World()
 	_iterations = 0;
 	_agentsVariation = false;
 	_worldObserver = gConfigurationLoader->make_WorldObserver(this);
+
+//set clumped
+
+
 }
 
 
@@ -80,6 +84,18 @@ void World::initWorld()
 	{
 		std::cout << "[CRITICAL] cannot load image files." << std::endl;
 		exit(-1);
+	}
+	if ( gProperties.hasProperty( "gClumped" ) ){
+		std::string s = gProperties.getProperty( "gClumped" );
+		if ( s == "true" || s == "True" || s == "TRUE" )
+	    {
+			isClump = true;
+		}else{
+			isClump = false;
+		}
+	}else
+	{
+			isClump = false;
 	}
 
     // * set or test are for initial position of agents and objects
@@ -150,10 +166,14 @@ void World::initWorld()
         gLandmarks.push_back(new LandmarkObject());
     }
 
+		std::srand(time(NULL));
     for ( int i = 0 ; i != gNbOfPhysicalObjects ; i++)
     {
-        PhysicalObjectFactory::makeObject(0);
-        PhysicalObjectFactory::makeObject(1);
+        PhysicalObjectFactory::makeObject(0, isClump);
+    }
+		for ( int i = 0 ; i != gNbOfPhysicalObjects ; i++)
+    {
+        PhysicalObjectFactory::makeObject(1, isClump);
     }
     gNbOfPhysicalObjects*=2;
 

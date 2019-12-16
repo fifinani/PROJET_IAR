@@ -12,10 +12,12 @@
 #include "RoboroboMain/common.h"
 #include "Utilities/ExtendedProperties.h"
 #include "Utilities/LogManager.h"
+#include "Utilities/Geometry.h"
 #include "World/LandmarkObject.h"
 #include "Agents/Robot.h"
 #include "World/PhysicalObjectFactory.h"
 #include "World/PhysicalObject.h"
+
 
 // project-wide Global data
 
@@ -81,7 +83,7 @@ extern int backup_gDisplayMode;
 
 									// much faster without display, in mode [0] (default); display speed == world refresh speed
 extern int  gFastDisplayModeSpeed;  // #images ignored in fast display mode (the higher, the faster)
-extern bool gMonitorRobot;			// display currently selected robot input/output value on console 
+extern bool gMonitorRobot;			// display currently selected robot input/output value on console
 extern int gTrajectoryMonitorIt;    // store the iteration when the last trajectory monitoring started. Use to create the trajectory image filename.
 extern long int gVersion;
 
@@ -92,6 +94,8 @@ extern World *gWorld;				// pointer to the World
 
 extern std::vector<Robot*> gRobots;
 extern std::vector<bool> gRobotsRegistry;
+
+extern std::vector<Point2d> gClumpCenters;
 
 extern int	gInitialNumberOfRobots;			// number of robots that should be created at start-up
 extern int	gNbOfRobots;	    // actual number of robots existing in the simulation right now
@@ -289,4 +293,3 @@ int launchRoborobo(); // the main entry point
 
 
 #endif // ROBOROBO_H
-

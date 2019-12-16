@@ -11,28 +11,15 @@
 
 
 int PhysicalObjectFactory::_nextId = 0;
+int PhysicalObjectFactory::_clumpId = -1;
 
-void PhysicalObjectFactory::makeObject( int type )
+void PhysicalObjectFactory::makeObjectNormal( int type )
 {
     int id = PhysicalObjectFactory::getNextId();
 
 	std::string s = "";
 	std::stringstream out;
 	out << id;
-
-  // s = "physicalObject[";
-	// s += out.str();
-	// s += "].type";
-	// if ( gProperties.hasProperty( s ) )
-	// {
-	// 	convertFromString<int>(type, gProperties.getProperty( s ), std::dec);
-	// }
-	// else
-	// {
-  //       if ( gVerbose )
-  //           std::cerr << "[MISSING] PhysicalObjectFactory: object #" << id << ", type is missing. Assume type "<< gPhysicalObjectDefaultType << "." << std::endl;
-  //       type = gPhysicalObjectDefaultType;
-	// }
 
     switch ( type )
     {
@@ -75,6 +62,40 @@ int PhysicalObjectFactory::getNbOfTypes()
     return 5;
 }
 
+void PhysicalObjectFactory::makeObject( int type , bool clumped ){
+  // std::cout << "create object of type : " << type << std::endl;
+  if(!clumped){
+    PhysicalObjectFactory::makeObjectNormal( type );
+  }else{
+    int id = PhysicalObjectFactory::getNextId();
+
+    //create new center every five
+    if(id%5 == 0 ){
+      int rx = std::rand()%gAreaWidth;
+      int ry = std::rand()%gAreaHeight;
+      gClumpCenters.push_back(Point2d(rx,ry));
+      _clumpId++;
+      // std::cout << " clumpID upgrade : " << _clumpId << std::endl;
+    }
+
+    switch ( type )
+    {
+      case 0:
+        if ( gVerbose )
+          std::cout << "[INFO] Round Object created (type = " << type << ").\n";
+        gPhysicalObjects.push_back( new EnergyItem_A(id, _clumpId ) );
+        break;
+      case 1:
+        if ( gVerbose )
+          std::cout << "[INFO] Energy Item created (type = " << type << ").\n";
+        gPhysicalObjects.push_back( new EnergyItem_B(id, _clumpId) );
+        break;
+      default:
+        std::cerr << "[CRITICAL] PhysicalObjectFactory: object #" << id << ", type unknown (" << type << ")" << std::endl;
+        exit(-1);
+    }
+  }
+}
 
 int PhysicalObjectFactory::getNextId()
 {

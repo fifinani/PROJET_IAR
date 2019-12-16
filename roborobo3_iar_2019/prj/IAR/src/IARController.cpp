@@ -358,9 +358,9 @@ void IARController::step()
   if(_wm->getEnergyLevel_A() == 0 || _wm->getEnergyLevel_B() == 0){
     std::cout << "MORT" << nbr_iteration++ << std::endl;
   }else{
-    std::cout <<
-    "Energy A : " << _wm->getEnergyLevel_A() <<
-    "\nEnergyB : " << _wm->getEnergyLevel_B() <<std::endl;
+    // std::cout <<
+    // "Energy A : " << _wm->getEnergyLevel_A() <<
+    // "\nEnergyB : " << _wm->getEnergyLevel_B() <<std::endl;
   }
   // if( _directionX_A != ldirXA
   //   || _directionY_A != ldirYA

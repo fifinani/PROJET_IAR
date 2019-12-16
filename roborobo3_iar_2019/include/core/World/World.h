@@ -21,10 +21,10 @@ class World
 	protected:
 
 		int _iterations;
-
+		bool isClump;
 		//True if there is a variation in the number of agent
 		bool _agentsVariation;
-		
+
 		WorldObserver *_worldObserver;
 
     public:
@@ -37,21 +37,21 @@ class World
 
 		void initWorld();
 		void updateWorld(const Uint8 *__keyboardStates = NULL);
-		
+
 		Robot* getRobot( int index );
 		bool isRobotRegistered( int index );
 
 		//delete an agent from the simulator. No other functions to call
         // THIS FUNCTION SHOULD NOT BE IMPLEMENTED AND SHOULD NEVER BE CALLED
-        // Roborobo assumes that the 'agents' list indexes matches agent's id. 
+        // Roborobo assumes that the 'agents' list indexes matches agent's id.
 		void deleteRobot (int index );
-    
+
 		//add an agent in the simulator. No other functions to call
 		void addRobot(Robot *robot);
-		
+
 		void deleteLandmark(int __index );
 		void addLandmark(LandmarkObject* objectToAdd);
-	
+
 		int getIterations();
 		WorldObserver* getWorldObserver();
 		int getNbOfRobots();
@@ -60,4 +60,3 @@ class World
 
 
 #endif // WORLD_H
-
