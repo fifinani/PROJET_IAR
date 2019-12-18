@@ -23,6 +23,8 @@ public:
     void isTouched( int __idAgent ) override; // callback, triggered by agent
     void isWalked( int __idAgent ) override; // callback, triggered by agent
     void isPushed( int __id, std::tuple<double, double> __speed ) override; // callback, triggered by collision w/ agent/objects
+    void moveClump(int clumpId);
+    int selectNewClump();
     void MoveToClump(int clumpId);
 };
 

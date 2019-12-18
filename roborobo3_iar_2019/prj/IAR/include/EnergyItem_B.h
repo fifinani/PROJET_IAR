@@ -12,7 +12,7 @@ private:
     int _clumpID;
     double ALossPerCycle;
     double BLossPerCycle;
-    
+
 public:
 
     EnergyItem_B( int __id ); // use PhysicalObjectFactory instead!
@@ -23,6 +23,8 @@ public:
     void isTouched( int __idAgent ) override; // callback, triggered by agent
     void isWalked( int __idAgent ) override; // callback, triggered by agent
     void isPushed( int __id, std::tuple<double, double> __speed ) override; // callback, triggered by collision w/ agent/object
+    void moveClump(int clumpId);
+    int selectNewClump();
     void MoveToClump(int clumpId);
 };
 

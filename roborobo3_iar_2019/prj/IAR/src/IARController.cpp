@@ -60,7 +60,7 @@ Return 1 : on va vers B
 Return -1 : On search
 
 */
-
+/*
 //Consume nearest
 int IARController::objective(){
   if(closest_dist_A == -1 && closest_dist_B == -1){
@@ -68,7 +68,7 @@ int IARController::objective(){
   }else{
     return closest_dist_A == -1 || ( !(closest_dist_A<closest_dist_B) && closest_dist_B!=-1 );
   }
-}
+}*/
 
 /*
 //CueXDeficit
@@ -82,17 +82,17 @@ int IARController::objective(){
     double cue_B = ((MAXSENSORDISTANCE-closest_dist_B)/MAXSENSORDISTANCE)*B_B*(B_MAX - _wm->getEnergyLevel_B())/B_MAX;
     return !(cue_A > cue_B);
   }
-}
-
+}*/
+/*
 //Cost Function  !!!!!implementer pas de detection
 int IARController::objective(){
     bool obj = !(((A_MAX - _wm->getEnergyLevel_A())*(A_MAX -_wm->getEnergyLevel_A())/(A_MAX*A_MAX)) > ((B_MAX - _wm->getEnergyLevel_B())*(B_MAX - _wm->getEnergyLevel_B())/(B_MAX*B_MAX)));
-    if( (obj == 0 && closest_dist_A == -1) || obj == 1 && closest_dist_B == -1){
+    if( (obj == 0 && closest_dist_A == -1) || (obj == 1 && closest_dist_B == -1)){
     return -1;
     }
     return obj;
-}
-
+}*/
+/*
 // One Step Planning Cost Function
 int IARController::objective(){
   double A_payoff = A_A;
@@ -103,40 +103,40 @@ int IARController::objective(){
   if(closest_dist_B == -1 ){
     B_payoff = 0;
   }
-  double cost_A = (((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_payoff + (A_LOSS_PER_CYCLE*closest_dist_A/DISTANCE_PER_CYCLE))² + (((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_A + (B_LOSS_PER_CYCLE*closest_dist_A/DISTANCE_PER_CYCLE))²;
-  double cost_B = (((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_payoff + (B_LOSS_PER_CYCLE*closest_dist_B/DISTANCE_PER_CYCLE))² + (((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_B + (A_LOSS_PER_CYCLE*closest_dist_B/DISTANCE_PER_CYCLE))²;
+  double cost_A = std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_payoff + (ALossPerCycle*closest_dist_A/DISTANCE_PER_CYCLE)),2) + std::pow((((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_A + (BLossPerCycle*closest_dist_A/DISTANCE_PER_CYCLE)),2);
+  double cost_B = std::pow((((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_payoff + (BLossPerCycle*closest_dist_B/DISTANCE_PER_CYCLE)),2) + std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_B + (ALossPerCycle*closest_dist_B/DISTANCE_PER_CYCLE)),2);
   int choice = cost_A > cost_B;
   if((choice && closest_dist_B == -1) || (!choice && closest_dist_A == -1) ){
     return -1;
   }else{
     return choice;
   }
-}
+}*/
 
 // Reactive One Step Planning Cost Function
 int IARController::objective(){
   double A_payoff = A_A;
   double B_payoff = B_B;
-  if(getDistance_A() == -1 ){
+  if(closest_dist_A == -1 ){
     A_payoff = 0;
   }
-  if(getDistance_B() == -1 ){
+  if(closest_dist_B == -1 ){
     B_payoff = 0;
   }
-  double cost_A = (((A_MAX - A_value)/A_MAX) - A_payoff + (A_LOSS_PER_CYCLE*getDistance_A()/DISTANCE_PER_CYCLE))² + (((B_MAX - B_value)/B_MAX) - B_A + (B_LOSS_PER_CYCLE*getDistance_A()/DISTANCE_PER_CYCLE))²;
-  double cost_B = (((B_MAX - B_value)/B_MAX) - B_payoff + (B_LOSS_PER_CYCLE*getDistance_B()/DISTANCE_PER_CYCLE))² + (((A_MAX - A_value)/A_MAX) - A_B + (A_LOSS_PER_CYCLE*getDistance_B()/DISTANCE_PER_CYCLE))²;
+  double cost_A = std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_payoff + (ALossPerCycle*closest_dist_A/DISTANCE_PER_CYCLE)),2) + std::pow((((B_MAX -_wm->getEnergyLevel_B())/B_MAX) - B_A + (BLossPerCycle*closest_dist_A/DISTANCE_PER_CYCLE)),2);
+  double cost_B = std::pow((((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_payoff + (BLossPerCycle*closest_dist_B/DISTANCE_PER_CYCLE)),2) + std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_B + (ALossPerCycle*closest_dist_B/DISTANCE_PER_CYCLE)),2);
   int choice = cost_A > cost_B;
-  if((choice && getDistance_B() == -1) || (!choice && getDistance_A() == -1) ){
-    if(getDistance_A() == -1 && getDistance_B() == -1){
+  if((choice && closest_dist_B == -1) || (!choice && closest_dist_A == -1) ){
+    if(closest_dist_A == -1 && closest_dist_B == -1){
       return -1;
     }else{
-      return !(getDistance_A()<getDistance_B());
+      return closest_dist_A < closest_dist_B ;
     }
   }else{
     return choice;
   }
 }
-*/
+
 void IARController::explore(){
   _wm->_desiredRotationalVelocity = 0;
   double r = (double)rand()/(double)RAND_MAX;
