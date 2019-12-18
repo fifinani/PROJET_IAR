@@ -100,13 +100,13 @@ int IARController::objective(){
   if(closest_dist_A == -1 ){
     A_payoff = 0;
   }
-  if(closest_dist_A == -1 ){
+  if(closest_dist_B == -1 ){
     B_payoff = 0;
   }
-  double cost_A = (((A_MAX - A_value)/A_MAX) - A_payoff + (A_LOSS_PER_CYCLE*getDistance_A()/DISTANCE_PER_CYCLE))² + (((B_MAX - B_value)/B_MAX) - B_A + (B_LOSS_PER_CYCLE*getDistance_A()/DISTANCE_PER_CYCLE))²;
-  double cost_B = (((B_MAX - B_value)/B_MAX) - B_payoff + (B_LOSS_PER_CYCLE*getDistance_B()/DISTANCE_PER_CYCLE))² + (((A_MAX - A_value)/A_MAX) - A_B + (A_LOSS_PER_CYCLE*getDistance_B()/DISTANCE_PER_CYCLE))²;
+  double cost_A = (((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_payoff + (A_LOSS_PER_CYCLE*closest_dist_A/DISTANCE_PER_CYCLE))² + (((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_A + (B_LOSS_PER_CYCLE*closest_dist_A/DISTANCE_PER_CYCLE))²;
+  double cost_B = (((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_payoff + (B_LOSS_PER_CYCLE*closest_dist_B/DISTANCE_PER_CYCLE))² + (((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_B + (A_LOSS_PER_CYCLE*closest_dist_B/DISTANCE_PER_CYCLE))²;
   int choice = cost_A > cost_B;
-  if((choice && getDistance_B() == -1) || (!choice && getDistance_A() == -1) ){
+  if((choice && closest_dist_B == -1) || (!choice && closest_dist_A == -1) ){
     return -1;
   }else{
     return choice;
