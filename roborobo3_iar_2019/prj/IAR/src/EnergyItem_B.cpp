@@ -21,6 +21,24 @@ EnergyItem_B::EnergyItem_B( int __id ) : CircleObject( __id ) // should only be 
         // _radius = 60;
         // _footprintRadius = 60;
     }
+    std::string str = "gALossPerCycle";
+    if ( gProperties.hasProperty( str ) == true )
+    {
+        convertFromString<double>(ALossPerCycle, gProperties.getProperty( str ), std::dec);
+    }
+    else
+    {
+        ALossPerCycle = A_LOSS_PER_CYCLE;
+    }
+    str = "gBLossPerCycle";
+    if ( gProperties.hasProperty( str ) == true )
+    {
+        convertFromString<double>(BLossPerCycle, gProperties.getProperty( str ), std::dec);
+    }
+    else
+    {
+        BLossPerCycle = B_LOSS_PER_CYCLE;
+    }
 
     std::string s = "";
   	std::stringstream out;
@@ -73,8 +91,8 @@ void EnergyItem_B::isTouched( int __idAgent )
 
 void EnergyItem_B::isWalked( int __idAgent )
 {
-    gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_B( B_B );
-    gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_B( B_A );
+    gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_B( B_B + BLossPerCycle);
+    gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_A( B_A + ALossPerCycle);
 
     regrowTime = 100;
     relocate();

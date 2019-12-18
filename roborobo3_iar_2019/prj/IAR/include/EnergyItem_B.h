@@ -10,7 +10,9 @@ private:
     double maxEnergyLevel;
     int energyMode;         // 0: give all energy ; 1: give what is asked, fixed respawn delay ; 2: give what is asked, linear respawn time (ie. from what is asked).
     int _clumpID;
-
+    double ALossPerCycle;
+    double BLossPerCycle;
+    
 public:
 
     EnergyItem_B( int __id ); // use PhysicalObjectFactory instead!

@@ -73,30 +73,34 @@ int IARController::objective(){
 /*
 //CueXDeficit
 int IARController::objective(){
-  if(getDistance_A() == -1 && getDistance_B() == -1){
+  if(closest_dist_A == -1 && closest_dist_B == -1){
     return -1;
-  }else if (getDistance_A() == -1 || getDistance_B() == -1){
-    return !(getDistance_A()<getDistance_B());
+  }else if (closest_dist_A == -1 || closest_dist_B == -1){
+    return closest_dist_A < closest_dist_B;
   }else{
-    double cue_A = ((MAXSENSORDISTANCE-getDistance_A())/MAXSENSORDISTANCE)*A_A*(A_MAX - A_value)/A_MAX;
-    double cue_B = ((MAXSENSORDISTANCE-getDistance_B())/MAXSENSORDISTANCE)*B_B*(B_MAX - B_value)/B_MAX;
+    double cue_A = ((MAXSENSORDISTANCE-closest_dist_A)/MAXSENSORDISTANCE)*A_A*(A_MAX - _wm->getEnergyLevel_A())/A_MAX;
+    double cue_B = ((MAXSENSORDISTANCE-closest_dist_B)/MAXSENSORDISTANCE)*B_B*(B_MAX - _wm->getEnergyLevel_B())/B_MAX;
     return !(cue_A > cue_B);
   }
 }
 
 //Cost Function  !!!!!implementer pas de detection
 int IARController::objective(){
-  return !(((A_MAX - A_value)*(A_MAX - A_value)/(A_MAX*A_MAX)) > ((B_MAX - B_value)*(B_MAX - B_value)/(B_MAX*B_MAX)));
+    bool obj = !(((A_MAX - _wm->getEnergyLevel_A())*(A_MAX -_wm->getEnergyLevel_A())/(A_MAX*A_MAX)) > ((B_MAX - _wm->getEnergyLevel_B())*(B_MAX - _wm->getEnergyLevel_B())/(B_MAX*B_MAX)));
+    if( (obj == 0 && closest_dist_A == -1) || obj == 1 && closest_dist_B == -1){
+    return -1;
+    }
+    return obj;
 }
 
 // One Step Planning Cost Function
 int IARController::objective(){
   double A_payoff = A_A;
   double B_payoff = B_B;
-  if(getDistance_A() == -1 ){
+  if(closest_dist_A == -1 ){
     A_payoff = 0;
   }
-  if(getDistance_B() == -1 ){
+  if(closest_dist_A == -1 ){
     B_payoff = 0;
   }
   double cost_A = (((A_MAX - A_value)/A_MAX) - A_payoff + (A_LOSS_PER_CYCLE*getDistance_A()/DISTANCE_PER_CYCLE))² + (((B_MAX - B_value)/B_MAX) - B_A + (B_LOSS_PER_CYCLE*getDistance_A()/DISTANCE_PER_CYCLE))²;
@@ -136,11 +140,7 @@ int IARController::objective(){
 void IARController::explore(){
   _wm->_desiredRotationalVelocity = 0;
   double r = (double)rand()/(double)RAND_MAX;
-<<<<<<< HEAD
-  // std::cout << r << std::endl;
-=======
 
->>>>>>> b21e29ae958f2e43120a5980ebd8ecfe315e42e7
   if(r < 0.01){
     if(r < 0.005){
       _wm->_agentAbsoluteOrientation = _wm->_agentAbsoluteOrientation + 30;
@@ -148,16 +148,11 @@ void IARController::explore(){
       _wm->_agentAbsoluteOrientation = _wm->_agentAbsoluteOrientation - 30;
     }
   }
-<<<<<<< HEAD
   if ( target_orientation - _wm->_agentAbsoluteOrientation < 0 )
       _wm->_desiredRotationalVelocity = +10;
   else if( target_orientation - _wm->_agentAbsoluteOrientation > 0 )
       _wm->_desiredRotationalVelocity = -10;
 
-=======
-  std::cout << _wm->_agentAbsoluteOrientation << std::endl;
-  //_wm->_agentAbsoluteOrientation = -90;
->>>>>>> b21e29ae958f2e43120a5980ebd8ecfe315e42e7
 }
 
 void IARController::goToA(){
@@ -371,7 +366,7 @@ void IARController::step()
   //
   // }
   // std::cout << std::endl;
-  if(_wm->getEnergyLevel_A() == 0 || _wm->getEnergyLevel_B() == 0){
+  if(_wm->getEnergyLevel_A() == 0 || _wm->getEnergyLevel_B() == 0 || nbr_iteration == 50000){
     std::cout << "MORT" << nbr_iteration << std::endl;
     std::ofstream fichier;
     fichier.open("resultat_"+std::to_string(ALossPerCycle)+".txt", std::ios::out | std::ios::app);
@@ -384,6 +379,8 @@ void IARController::step()
     // "Energy A : " << _wm->getEnergyLevel_A() <<
     // "\nEnergyB : " << _wm->getEnergyLevel_B() <<std::endl;
   }
+  // if(nbr_iteration%5000 == 0 )
+  //   std::cout << nbr_iteration << std::endl;
   // if( _directionX_A != ldirXA
   //   || _directionY_A != ldirYA
   //   || _directionX_B != ldirXB
