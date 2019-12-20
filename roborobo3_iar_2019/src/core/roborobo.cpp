@@ -332,6 +332,7 @@ std::vector<int> gClumpNb_A;
 std::vector<Point2d> gClumpCenters_B;
 std::vector<int> gClumpNb_B;
 
+double gLossPerCycle = -1;
 /* ********************
  * * global functions *
  * ********************/

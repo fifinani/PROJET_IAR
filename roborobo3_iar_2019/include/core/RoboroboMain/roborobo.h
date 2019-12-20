@@ -102,6 +102,8 @@ extern std::vector<int> gClumpNb_A;
 extern std::vector<Point2d> gClumpCenters_B;
 extern std::vector<int> gClumpNb_B;
 
+extern double gLossPerCycle;
+
 extern int	gInitialNumberOfRobots;			// number of robots that should be created at start-up
 extern int	gNbOfRobots;	    // actual number of robots existing in the simulation right now
 extern int	gRobotIndexFocus;		// focused robot id.
