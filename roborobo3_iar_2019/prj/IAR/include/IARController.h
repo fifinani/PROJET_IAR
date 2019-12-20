@@ -34,6 +34,8 @@ class IARController : public Controller
 		double ALossPerCycle;
 		double BLossPerCycle;
 
+		int objectiveFunction = 0;
+
 		int alive;
 	public:
 		IARController( RobotWorldModel *__wm );
@@ -42,6 +44,11 @@ class IARController : public Controller
 		void reset();
 		void step();
 		int objective();
+		int consumeNearest();
+		int cueDeficit();
+		int costFunction();
+		int planningCostFunction();
+		int reactiveFunction();
 		double getDistance_A();
 		double getDistance_B();
 		Point2d getClosestA();

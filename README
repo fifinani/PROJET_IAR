@@ -2,3 +2,22 @@ A REMPLIR
 
 
 CueXDeficit: (dist_max_sensor-dist_A)/dist_max_sensor
+
+Les differents types d'environnements peuvent êtres définis dans le fichier config/IAR.properties.
+	gALossPerCycle (float) : 	diminution de la ressource A à chaque pas
+	gBLossPerCycle (float) : 	diminution de la ressource B à chaque pas
+	gClumped (bool) :		si false, les ressources sont dispersé de facon uniforme dans le monde, sinon, elles sont regroupés en paquet de 5 même ressource repartis uniformement dans le monde
+	gFunction (int) :		définis quelle fonction de décision est utilisé (0 : Consume nearest , 1 : CueXdeficit , 2 : Cost Function , 3 : One step planning cost function , 4 : Reactive one step planning cost function)
+
+D'autres paramètres peuvent être modifiés dans le fichier prj/IAR/Include/variables.h mais nécessite une recompilationd programme
+(TODO : faire que variables.h définisse valeur par défaut, tout mettre dans IAR.properties)
+
+usage :
+	./roborobo -l config/IAR.properties
+
+	-m lossPerCycle peut être ajouté pour redéfinir le taux de perte des ressources A et B à chaque pas de temps (surplombe les paramètres de IAR.properties gAlossPerCycle et gBLossPerCycle)
+	
+Les autres argument sont ceux définis par le framework roborobo (voir ./roborobo -h)
+
+./multistart.sh : lance N essais de l'environnement IAR.properties 
+./multistart2.sh : lance N essais chaque environnement IAR.properties en faisant varier lossPerCycle entre 0.004 et 0.006 avec un pas de 0.0002 

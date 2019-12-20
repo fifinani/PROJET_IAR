@@ -29,23 +29,33 @@ IARController::IARController( RobotWorldModel *__wm ) : Controller ( __wm )
         exit(-1);
     }
     srand (time(NULL));
-    std::string str = "gALossPerCycle";
-    if ( gProperties.hasProperty( str ) == true )
-    {
+    if(gLossPerCycle != -1 ){
+      ALossPerCycle = gLossPerCycle;
+      BLossPerCycle = gLossPerCycle;
+    }else{
+      std::string str = "gALossPerCycle";
+      if ( gProperties.hasProperty( str ) == true )
+      {
         convertFromString<double>(ALossPerCycle, gProperties.getProperty( str ), std::dec);
-    }
-    else
-    {
+      }
+      else
+      {
         ALossPerCycle = A_LOSS_PER_CYCLE;
+      }
+      str = "gBLossPerCycle";
+      if ( gProperties.hasProperty( str ) == true )
+      {
+        convertFromString<double>(BLossPerCycle, gProperties.getProperty( str ), std::dec);
+      }
+      else
+      {
+        BLossPerCycle = B_LOSS_PER_CYCLE;
+      }
     }
-    str = "gBLossPerCycle";
+    std::string str = "gFunction";
     if ( gProperties.hasProperty( str ) == true )
     {
-        convertFromString<double>(BLossPerCycle, gProperties.getProperty( str ), std::dec);
-    }
-    else
-    {
-        BLossPerCycle = B_LOSS_PER_CYCLE;
+      convertFromString<int>(objectiveFunction, gProperties.getProperty( str ), std::dec);
     }
 }
 
@@ -60,19 +70,19 @@ Return 1 : on va vers B
 Return -1 : On search
 
 */
-/*
+
 //Consume nearest
-int IARController::objective(){
+int IARController::consumeNearest(){
   if(closest_dist_A == -1 && closest_dist_B == -1){
     return -1;
   }else{
     return closest_dist_A == -1 || ( !(closest_dist_A<closest_dist_B) && closest_dist_B!=-1 );
   }
-}*/
+}
 
-/*
+
 //CueXDeficit
-int IARController::objective(){
+int IARController::cueDeficit(){
   if(closest_dist_A == -1 && closest_dist_B == -1){
     return -1;
   }else if (closest_dist_A == -1 || closest_dist_B == -1){
@@ -82,19 +92,37 @@ int IARController::objective(){
     double cue_B = ((MAXSENSORDISTANCE-closest_dist_B)/MAXSENSORDISTANCE)*B_B*(B_MAX - _wm->getEnergyLevel_B())/B_MAX;
     return !(cue_A > cue_B);
   }
-}*/
-/*
+}
+
 //Cost Function  !!!!!implementer pas de detection
-int IARController::objective(){
+int IARController::costFunction(){
     bool obj = !(((A_MAX - _wm->getEnergyLevel_A())*(A_MAX -_wm->getEnergyLevel_A())/(A_MAX*A_MAX)) > ((B_MAX - _wm->getEnergyLevel_B())*(B_MAX - _wm->getEnergyLevel_B())/(B_MAX*B_MAX)));
     if( (obj == 0 && closest_dist_A == -1) || (obj == 1 && closest_dist_B == -1)){
     return -1;
     }
     return obj;
-}*/
-/*
-// One Step Planning Cost Function
+}
+
 int IARController::objective(){
+  switch(objectiveFunction){
+    case 0 :
+      return consumeNearest();
+    case 1 :
+      std::cout <<"cueDeficit"<<std::endl;
+      return cueDeficit() ;
+    case 2 :
+      return costFunction();
+    case 3 :
+      return planningCostFunction();
+    case 4 :
+      return reactiveFunction();
+    default :
+      return consumeNearest();
+  }
+}
+
+// One Step Planning Cost Function
+int IARController::planningCostFunction(){
   double A_payoff = A_A;
   double B_payoff = B_B;
   if(closest_dist_A == -1 ){
@@ -111,10 +139,10 @@ int IARController::objective(){
   }else{
     return choice;
   }
-}*/
+}
 
 // Reactive One Step Planning Cost Function
-int IARController::objective(){
+int IARController::reactiveFunction(){
   double A_payoff = A_A;
   double B_payoff = B_B;
   if(closest_dist_A == -1 ){

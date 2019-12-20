@@ -9,7 +9,7 @@
 #define B_LOSS_PER_CYCLE  0.0045
 #define A_INITIAL  10
 #define B_INITIAL  10
-#define MAXSENSORDISTANCE  1500
+#define MAXSENSORDISTANCE  2000
 #define A_MAX  40
 #define B_MAX  40
 #define A_A  1
