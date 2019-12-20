@@ -61,8 +61,11 @@ Return -1 : On search
 
 */
 
+/*
+
 //Consume nearest
 int IARController::objective(){
+  algo = "Consume_Nearest";
   if(closest_dist_A == -1 && closest_dist_B == -1){
     return -1;
   }else{
@@ -70,9 +73,10 @@ int IARController::objective(){
   }
 }
 
-/*
+
 //CueXDeficit
 int IARController::objective(){
+algo = "CueXDeficit"
   if(closest_dist_A == -1 && closest_dist_B == -1){
     return -1;
   }else if (closest_dist_A == -1 || closest_dist_B == -1){
@@ -86,15 +90,17 @@ int IARController::objective(){
 
 //Cost Function  !!!!!implementer pas de detection
 int IARController::objective(){
+    algo = "Cost_Function";
     bool obj = !(((A_MAX - _wm->getEnergyLevel_A())*(A_MAX -_wm->getEnergyLevel_A())/(A_MAX*A_MAX)) > ((B_MAX - _wm->getEnergyLevel_B())*(B_MAX - _wm->getEnergyLevel_B())/(B_MAX*B_MAX)));
     if( (obj == 0 && closest_dist_A == -1) || obj == 1 && closest_dist_B == -1){
     return -1;
     }
     return obj;
 }
-
+*/
 // One Step Planning Cost Function
 int IARController::objective(){
+  algo = "One_Step_Planning_Cost_Function";
   double A_payoff = A_A;
   double B_payoff = B_B;
   if(closest_dist_A == -1 ){
@@ -103,8 +109,8 @@ int IARController::objective(){
   if(closest_dist_B == -1 ){
     B_payoff = 0;
   }
-  double cost_A = (((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_payoff + (A_LOSS_PER_CYCLE*closest_dist_A/DISTANCE_PER_CYCLE))² + (((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_A + (B_LOSS_PER_CYCLE*closest_dist_A/DISTANCE_PER_CYCLE))²;
-  double cost_B = (((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_payoff + (B_LOSS_PER_CYCLE*closest_dist_B/DISTANCE_PER_CYCLE))² + (((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_B + (A_LOSS_PER_CYCLE*closest_dist_B/DISTANCE_PER_CYCLE))²;
+  double cost_A = pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_payoff + (A_LOSS_PER_CYCLE*closest_dist_A/DISTANCE_PER_CYCLE)),2) + pow(((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_A + (B_LOSS_PER_CYCLE*closest_dist_A/DISTANCE_PER_CYCLE),2);
+  double cost_B = pow(((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_payoff + (B_LOSS_PER_CYCLE*closest_dist_B/DISTANCE_PER_CYCLE),2) + pow(((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_B + (A_LOSS_PER_CYCLE*closest_dist_B/DISTANCE_PER_CYCLE),2);
   int choice = cost_A > cost_B;
   if((choice && closest_dist_B == -1) || (!choice && closest_dist_A == -1) ){
     return -1;
@@ -112,9 +118,10 @@ int IARController::objective(){
     return choice;
   }
 }
-
+/*
 // Reactive One Step Planning Cost Function
 int IARController::objective(){
+  algo = "ReactiveOne_Step_Planning_Cost_Function";
   double A_payoff = A_A;
   double B_payoff = B_B;
   if(getDistance_A() == -1 ){
@@ -148,16 +155,10 @@ void IARController::explore(){
       _wm->_agentAbsoluteOrientation = _wm->_agentAbsoluteOrientation - 30;
     }
   }
-  if ( target_orientation - _wm->_agentAbsoluteOrientation < 0 )
-      _wm->_desiredRotationalVelocity = +10;
-  else if( target_orientation - _wm->_agentAbsoluteOrientation > 0 )
-      _wm->_desiredRotationalVelocity = -10;
-
 }
 
 void IARController::goToA(){
   _wm->_desiredRotationalVelocity = 0;
-  target_orientation = 0;
   Point2d closest_A = getClosestA();
   double angleToA = getAngleToTarget( _wm->_xReal, _wm->_yReal, _wm->_agentAbsoluteOrientation, closest_A.x +_directionX_A*gAreaWidth , closest_A.y +_directionY_A*gAreaHeight);
   // std::cout << "angle to A : " << angleToA << std::endl;
@@ -170,7 +171,6 @@ void IARController::goToA(){
 
 void IARController::goToB(){
   _wm->_desiredRotationalVelocity = 0;
-  target_orientation = 0;
   Point2d closest_B = getClosestB();
   double angleToB = getAngleToTarget( _wm->_xReal, _wm->_yReal, _wm->_agentAbsoluteOrientation, closest_B.x+_directionX_B*gAreaWidth,closest_B.y+_directionY_B*gAreaHeight);
   // std::cout << "angle to B : " << angleToB << std::endl;
@@ -369,7 +369,7 @@ void IARController::step()
   if(_wm->getEnergyLevel_A() == 0 || _wm->getEnergyLevel_B() == 0 || nbr_iteration == 50000){
     std::cout << "MORT" << nbr_iteration << std::endl;
     std::ofstream fichier;
-    fichier.open("resultat_"+std::to_string(ALossPerCycle)+".txt", std::ios::out | std::ios::app);
+    fichier.open(algo + "_resultat_"+std::to_string(ALossPerCycle)+".txt", std::ios::out | std::ios::app);
     fichier << nbr_iteration << std::endl;
     fichier.close();
     exit(0);
