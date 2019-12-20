@@ -9,7 +9,7 @@
 EnergyItem_B::EnergyItem_B( int __id ) : CircleObject( __id ) // should only be called by PhysicalObjectFactory
 {
     setType(1);
-    _clumpID = 0;
+    _clumpID = -1;
 
     if ( gProperties.hasProperty( "itemRadius" ) ){
       convertFromString<double>(_radius, gProperties.getProperty( "itemRadius" ), std::dec);
@@ -72,6 +72,7 @@ EnergyItem_B::EnergyItem_B( int __id ) : CircleObject( __id ) // should only be 
 EnergyItem_B::EnergyItem_B( int __id, int clumpId ) : EnergyItem_B(__id) // should only be called by PhysicalObjectFactory
 {
     if(clumpId >=0){
+      std::cout << "add B at : " << clumpId << " nbr : " << gClumpNb_B[clumpId] << std::endl;
       _clumpID = clumpId;
       MoveToClump(clumpId);
     }
@@ -95,7 +96,15 @@ void EnergyItem_B::isWalked( int __idAgent )
     gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_A( B_A + ALossPerCycle);
 
     regrowTime = 100;
-    relocate();
+    if(_clumpID != -1 ){
+      MoveToClump(selectNewClump());
+      std::cout << "clump B\n :";
+      for(int i =0;  i < gClumpCenters_B.size() ; i++ ){
+        std::cout << "\tposition : " <<  gClumpCenters_B[i].x << " " << gClumpCenters_B[i].y << " nb : " << gClumpNb_B[i] << std::endl;
+      }
+    }else{
+      relocate();
+    }
     unregisterObject();
     registered = false;
     hide();
@@ -108,10 +117,27 @@ void EnergyItem_B::isPushed( int __id, std::tuple<double, double> __speed )
     //        std::cout << "[DEBUG] Physical object #" << this->getId() << " (energy item) pushed by robot/object #" << __id << std::endl;
 }
 
+void EnergyItem_B::moveClump(int clumpId){
+  int rx = std::rand()%gAreaWidth;
+  int ry = std::rand()%gAreaHeight;
+  gClumpCenters_B[clumpId] = Point2d(rx,ry);
+  gClumpNb_B[clumpId] = 0;
+  std::cout << "create new clump B at : " << rx << " " << ry << std::endl;
+}
+
+int EnergyItem_B::selectNewClump(){
+  int nbClump = gClumpCenters_B.size();
+  int r = rand()%nbClump;
+  _clumpID = r;
+  return r;
+}
+
 void EnergyItem_B::MoveToClump(int clumpId){
   unregisterObject();
+
   do{
-    Point2d center = gClumpCenters[clumpId];
+    Point2d center = gClumpCenters_B[clumpId];
+
     int dist = std::rand()%251;
     int orientation = std::rand()%360;
     int x = center.x + dist*cos( (double)orientation * M_PI / 180);
@@ -123,5 +149,10 @@ void EnergyItem_B::MoveToClump(int clumpId){
     setCoordinates( x, y );
 
   }while(canRegister() == false);
+  gClumpNb_B[clumpId] += 1;
+  //if full realocate
+  if(gClumpNb_B[clumpId] >= 5){
+    moveClump(clumpId);
+  }
   registerObject();
 }

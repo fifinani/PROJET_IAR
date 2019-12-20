@@ -326,6 +326,12 @@ std::vector<Robot*> gRobots;
 std::vector<bool> gRobotsRegistry;
 
 std::vector<Point2d> gClumpCenters;
+
+std::vector<Point2d> gClumpCenters_A;
+std::vector<int> gClumpNb_A;
+std::vector<Point2d> gClumpCenters_B;
+std::vector<int> gClumpNb_B;
+
 /* ********************
  * * global functions *
  * ********************/

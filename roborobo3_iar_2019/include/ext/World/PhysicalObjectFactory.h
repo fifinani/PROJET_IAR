@@ -14,7 +14,8 @@ class PhysicalObject;
 class PhysicalObjectFactory
 {
 	private :
-				static int _clumpId;
+				static int _clumpId_A;
+				static int _clumpId_B;
         static int _nextId;
 
 	public :

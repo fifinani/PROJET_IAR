@@ -9,7 +9,7 @@
 EnergyItem_A::EnergyItem_A( int __id ) : CircleObject( __id ) // should only be called by PhysicalObjectFactory
 {
     setType(0);
-    _clumpID = 0;
+    _clumpID = -1;
 
     if ( gProperties.hasProperty( "itemRadius" ) ){
       convertFromString<double>(_radius, gProperties.getProperty( "itemRadius" ), std::dec);
@@ -72,6 +72,7 @@ EnergyItem_A::EnergyItem_A( int __id ) : CircleObject( __id ) // should only be 
 EnergyItem_A::EnergyItem_A( int __id, int clumpId ) : EnergyItem_A(__id) // should only be called by PhysicalObjectFactory
 {
   if(clumpId >=0){
+    std::cout << "add A at : " << clumpId << " nbr : " << gClumpNb_A[clumpId] << std::endl;
     _clumpID = clumpId;
     MoveToClump(clumpId);
   }
@@ -94,7 +95,11 @@ void EnergyItem_A::isWalked( int __idAgent )
     gWorld->getRobot(__idAgent)->getWorldModel()->addEnergy_B( A_B + BLossPerCycle );
 
     regrowTime = 100;
-    relocate();
+    if(_clumpID != -1 ){
+      MoveToClump(selectNewClump());
+    }else{
+      relocate();
+    }
     unregisterObject();
     registered = false;
     hide();
@@ -106,11 +111,27 @@ void EnergyItem_A::isPushed( int __id, std::tuple<double, double> __speed )
     //    if ( gVerbose && gDisplayMode <= 1)
     //        std::cout << "[DEBUG] Physical object #" << this->getId() << " (energy item) pushed by robot/object #" << __id << std::endl;
 }
+void EnergyItem_A::moveClump(int clumpId){
+  int rx = std::rand()%gAreaWidth;
+  int ry = std::rand()%gAreaHeight;
+  gClumpCenters_A[clumpId] = Point2d(rx,ry);
+  gClumpNb_A[clumpId] = 0;
+  std::cout << "create new clump A at : " << rx << " " << ry << std::endl;
+}
+
+int EnergyItem_A::selectNewClump(){
+  int nbClump = gClumpCenters_A.size();
+  int r = rand()%nbClump;
+  _clumpID = r;
+  return r;
+}
 
 void EnergyItem_A::MoveToClump(int clumpId){
   unregisterObject();
+
   do{
-    Point2d center = gClumpCenters[clumpId];
+    Point2d center = gClumpCenters_A[clumpId];
+
     int dist = std::rand()%251;
     int orientation = std::rand()%360;
     int x = center.x + dist*cos( (double)orientation * M_PI / 180);
@@ -121,7 +142,11 @@ void EnergyItem_A::MoveToClump(int clumpId){
     else if(y > gAreaHeight ){ y -= gAreaHeight ; }
     setCoordinates( x, y );
   }while(canRegister() == false);
-
+  gClumpNb_A[clumpId] += 1;
+  //if full realocate
+  if(gClumpNb_A[clumpId] >= 5){
+    moveClump(clumpId);
+  }
   registerObject();
 
 }
