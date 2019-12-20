@@ -6,5 +6,5 @@ do
 	echo "############## SIMULATION n°$i ###############"
      ./roborobo -l config/IAR.properties #execution du programme
 done
-
+echo "############## Fin de simulation ###############"
 exit 0;
