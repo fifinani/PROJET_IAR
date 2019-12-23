@@ -18,7 +18,7 @@ class IARController : public Controller
 	private:
 		double A_value;
 		double B_value;
-
+		
 		PhysicalObject * closest_A;
 		PhysicalObject * closest_B;
 		double closest_dist_A = -1;

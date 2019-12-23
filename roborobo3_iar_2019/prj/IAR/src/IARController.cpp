@@ -51,12 +51,15 @@ IARController::IARController( RobotWorldModel *__wm ) : Controller ( __wm )
       {
         BLossPerCycle = B_LOSS_PER_CYCLE;
       }
+
+
     }
     std::string str = "gFunction";
     if ( gProperties.hasProperty( str ) == true )
     {
       convertFromString<int>(objectiveFunction, gProperties.getProperty( str ), std::dec);
     }
+
 }
 
 /* **** **** **** */
@@ -71,10 +74,10 @@ Return -1 : On search
 
 */
 
-/*
 
-//Consume nearest
-int IARController::objective(){
+
+
+int IARController::consumeNearest(){
   algo = "Consume_Nearest";
   if(closest_dist_A == -1 && closest_dist_B == -1){
     return -1;
@@ -84,16 +87,11 @@ int IARController::objective(){
 }
 
 
-<<<<<<< HEAD
 
 //CueXDeficit
-int IARController::objective(){
-algo = "CueXDeficit"
-=======
-//CueXDeficit
 int IARController::cueDeficit(){
->>>>>>> 992de5b2541e84b3003328269e32c9da032c2278
-  if(closest_dist_A == -1 && closest_dist_B == -1){
+  algo = "CueXDeficit";
+if(closest_dist_A == -1 && closest_dist_B == -1){
     return -1;
   }else if (closest_dist_A == -1 || closest_dist_B == -1){
     return closest_dist_A < closest_dist_B;
@@ -105,7 +103,7 @@ int IARController::cueDeficit(){
 }
 
 //Cost Function  !!!!!implementer pas de detection
-int IARController::objective(){
+int IARController::costFunction(){
     algo = "Cost_Function";
     bool obj = !(((A_MAX - _wm->getEnergyLevel_A())*(A_MAX -_wm->getEnergyLevel_A())/(A_MAX*A_MAX)) > ((B_MAX - _wm->getEnergyLevel_B())*(B_MAX - _wm->getEnergyLevel_B())/(B_MAX*B_MAX)));
     if( (obj == 0 && closest_dist_A == -1) || (obj == 1 && closest_dist_B == -1)){
@@ -145,11 +143,21 @@ int IARController::planningCostFunction(){
   double cost_A = std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_payoff + (ALossPerCycle*closest_dist_A/DISTANCE_PER_CYCLE)),2) + std::pow((((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_A + (BLossPerCycle*closest_dist_A/DISTANCE_PER_CYCLE)),2);
   double cost_B = std::pow((((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_payoff + (BLossPerCycle*closest_dist_B/DISTANCE_PER_CYCLE)),2) + std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_B + (ALossPerCycle*closest_dist_B/DISTANCE_PER_CYCLE)),2);
   int choice = cost_A > cost_B;
-  if((choice && closest_dist_B == -1) || (!choice && closest_dist_A == -1) ){
-    return -1;
-  }else{
-    return choice;
+  if(choice==0 && closest_dist_A == -1) {
+    if(closest_dist_B == -1 || ((B_MAX - _wm->getEnergyLevel_B())/B_MAX) < 0.01 ) {
+      return -1;
+    }else{
+      return 1;
+    }
   }
+  if(choice==1 && closest_dist_B == -1) {
+    if(closest_dist_A == -1 || ((A_MAX - _wm->getEnergyLevel_A())/A_MAX) < 0.01 ) {
+      return -1;
+    }else{
+      return 0;
+    }
+  }
+  return choice;
 }
 
 // Reactive One Step Planning Cost Function
@@ -176,7 +184,6 @@ int IARController::reactiveFunction(){
   }
 }
 
-*/
 void IARController::explore(){
   _wm->_desiredRotationalVelocity = 0;
   double r = (double)rand()/(double)RAND_MAX;
@@ -402,7 +409,7 @@ void IARController::step()
   if(_wm->getEnergyLevel_A() == 0 || _wm->getEnergyLevel_B() == 0 || nbr_iteration == 50000){
     std::cout << "MORT" << nbr_iteration << std::endl;
     std::ofstream fichier;
-    fichier.open(algo + "_resultat_"+std::to_string(ALossPerCycle)+".txt", std::ios::out | std::ios::app);
+    fichier.open( algo + "_resultat_"+std::to_string(ALossPerCycle)+ "_range_"+std::to_string(MAXSENSORDISTANCE)+".txt", std::ios::out | std::ios::app);
     fichier << nbr_iteration << std::endl;
     fichier.close();
     exit(0);
