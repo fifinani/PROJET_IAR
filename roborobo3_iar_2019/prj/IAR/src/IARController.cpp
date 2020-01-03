@@ -132,6 +132,7 @@ int IARController::objective(){
 
 // One Step Planning Cost Function
 int IARController::planningCostFunction(){
+  algo = "One_Step_Planning";
   double A_payoff = A_A;
   double B_payoff = B_B;
   if(closest_dist_A == -1 ){
@@ -162,6 +163,7 @@ int IARController::planningCostFunction(){
 
 // Reactive One Step Planning Cost Function
 int IARController::reactiveFunction(){
+  algo = "Reactive_One_Step_Planning";
   double A_payoff = A_A;
   double B_payoff = B_B;
   if(closest_dist_A == -1 ){
@@ -177,7 +179,7 @@ int IARController::reactiveFunction(){
     if(closest_dist_A == -1 && closest_dist_B == -1){
       return -1;
     }else{
-      return closest_dist_A < closest_dist_B ;
+      return closest_dist_A == -1 || ( !(closest_dist_A<closest_dist_B) && closest_dist_B!=-1 ) ;
     }
   }else{
     return choice;
