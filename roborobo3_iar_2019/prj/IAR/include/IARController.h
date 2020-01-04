@@ -8,7 +8,7 @@
 #include "RoboroboMain/common.h"
 #include "IAR/include/Variables.h"
 #include "World/PhysicalObject.h"
-
+#include <string>
 
 
 class RobotWorldModel;
@@ -18,8 +18,7 @@ class IARController : public Controller
 	private:
 		double A_value;
 		double B_value;
-		double target_orientation;
-
+		
 		PhysicalObject * closest_A;
 		PhysicalObject * closest_B;
 		double closest_dist_A = -1;
@@ -28,6 +27,7 @@ class IARController : public Controller
 		int _directionY_A = 0;
 		int _directionX_B = 0;
 		int _directionY_B = 0;
+		std::string algo;
 
 		int nbr_iteration = 0;
 

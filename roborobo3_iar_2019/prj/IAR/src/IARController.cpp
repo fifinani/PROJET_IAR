@@ -51,12 +51,15 @@ IARController::IARController( RobotWorldModel *__wm ) : Controller ( __wm )
       {
         BLossPerCycle = B_LOSS_PER_CYCLE;
       }
+
+
     }
     std::string str = "gFunction";
     if ( gProperties.hasProperty( str ) == true )
     {
       convertFromString<int>(objectiveFunction, gProperties.getProperty( str ), std::dec);
     }
+
 }
 
 /* **** **** **** */
@@ -71,8 +74,11 @@ Return -1 : On search
 
 */
 
-//Consume nearest
+
+
+
 int IARController::consumeNearest(){
+  algo = "Consume_Nearest";
   if(closest_dist_A == -1 && closest_dist_B == -1){
     return -1;
   }else{
@@ -81,9 +87,11 @@ int IARController::consumeNearest(){
 }
 
 
+
 //CueXDeficit
 int IARController::cueDeficit(){
-  if(closest_dist_A == -1 && closest_dist_B == -1){
+  algo = "CueXDeficit";
+if(closest_dist_A == -1 && closest_dist_B == -1){
     return -1;
   }else if (closest_dist_A == -1 || closest_dist_B == -1){
     return closest_dist_A < closest_dist_B;
@@ -96,6 +104,7 @@ int IARController::cueDeficit(){
 
 //Cost Function  !!!!!implementer pas de detection
 int IARController::costFunction(){
+    algo = "Cost_Function";
     bool obj = !(((A_MAX - _wm->getEnergyLevel_A())*(A_MAX -_wm->getEnergyLevel_A())/(A_MAX*A_MAX)) > ((B_MAX - _wm->getEnergyLevel_B())*(B_MAX - _wm->getEnergyLevel_B())/(B_MAX*B_MAX)));
     if( (obj == 0 && closest_dist_A == -1) || (obj == 1 && closest_dist_B == -1)){
     return -1;
@@ -122,6 +131,7 @@ int IARController::objective(){
 
 // One Step Planning Cost Function
 int IARController::planningCostFunction(){
+  algo = "One_Step_Planning";
   double A_payoff = A_A;
   double B_payoff = B_B;
   if(closest_dist_A == -1 ){
@@ -133,15 +143,26 @@ int IARController::planningCostFunction(){
   double cost_A = std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_payoff + (ALossPerCycle*closest_dist_A/DISTANCE_PER_CYCLE)),2) + std::pow((((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_A + (BLossPerCycle*closest_dist_A/DISTANCE_PER_CYCLE)),2);
   double cost_B = std::pow((((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_payoff + (BLossPerCycle*closest_dist_B/DISTANCE_PER_CYCLE)),2) + std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_B + (ALossPerCycle*closest_dist_B/DISTANCE_PER_CYCLE)),2);
   int choice = cost_A > cost_B;
-  if((choice && closest_dist_B == -1) || (!choice && closest_dist_A == -1) ){
-    return -1;
-  }else{
-    return choice;
+  if(choice==0 && closest_dist_A == -1) {
+    if(closest_dist_B == -1 || ((B_MAX - _wm->getEnergyLevel_B())/B_MAX) < 0.01 ) {
+      return -1;
+    }else{
+      return 1;
+    }
   }
+  if(choice==1 && closest_dist_B == -1) {
+    if(closest_dist_A == -1 || ((A_MAX - _wm->getEnergyLevel_A())/A_MAX) < 0.01 ) {
+      return -1;
+    }else{
+      return 0;
+    }
+  }
+  return choice;
 }
 
 // Reactive One Step Planning Cost Function
 int IARController::reactiveFunction(){
+  algo = "Reactive_One_Step_Planning";
   double A_payoff = A_A;
   double B_payoff = B_B;
   if(closest_dist_A == -1 ){
@@ -157,7 +178,7 @@ int IARController::reactiveFunction(){
     if(closest_dist_A == -1 && closest_dist_B == -1){
       return -1;
     }else{
-      return closest_dist_A < closest_dist_B ;
+      return closest_dist_A == -1 || ( !(closest_dist_A<closest_dist_B) && closest_dist_B!=-1 ) ;
     }
   }else{
     return choice;
@@ -175,16 +196,10 @@ void IARController::explore(){
       _wm->_agentAbsoluteOrientation = _wm->_agentAbsoluteOrientation - 30;
     }
   }
-  if ( target_orientation - _wm->_agentAbsoluteOrientation < 0 )
-      _wm->_desiredRotationalVelocity = +10;
-  else if( target_orientation - _wm->_agentAbsoluteOrientation > 0 )
-      _wm->_desiredRotationalVelocity = -10;
-
 }
 
 void IARController::goToA(){
   _wm->_desiredRotationalVelocity = 0;
-  target_orientation = 0;
   Point2d closest_A = getClosestA();
   double angleToA = getAngleToTarget( _wm->_xReal, _wm->_yReal, _wm->_agentAbsoluteOrientation, closest_A.x +_directionX_A*gAreaWidth , closest_A.y +_directionY_A*gAreaHeight);
   // std::cout << "angle to A : " << angleToA << std::endl;
@@ -197,7 +212,6 @@ void IARController::goToA(){
 
 void IARController::goToB(){
   _wm->_desiredRotationalVelocity = 0;
-  target_orientation = 0;
   Point2d closest_B = getClosestB();
   double angleToB = getAngleToTarget( _wm->_xReal, _wm->_yReal, _wm->_agentAbsoluteOrientation, closest_B.x+_directionX_B*gAreaWidth,closest_B.y+_directionY_B*gAreaHeight);
   // std::cout << "angle to B : " << angleToB << std::endl;
@@ -396,7 +410,7 @@ void IARController::step()
   if(_wm->getEnergyLevel_A() == 0 || _wm->getEnergyLevel_B() == 0 || nbr_iteration == 50000){
     std::cout << "MORT" << nbr_iteration << std::endl;
     std::ofstream fichier;
-    fichier.open("resultat_"+std::to_string(ALossPerCycle)+".txt", std::ios::out | std::ios::app);
+    fichier.open( algo + "_resultat_"+std::to_string(ALossPerCycle)+ "_range_"+std::to_string(MAXSENSORDISTANCE)+".txt", std::ios::out | std::ios::app);
     fichier << nbr_iteration << std::endl;
     fichier.close();
 
