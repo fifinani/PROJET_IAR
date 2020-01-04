@@ -108,7 +108,6 @@ int IARController::objective(){
     case 0 :
       return consumeNearest();
     case 1 :
-      std::cout <<"cueDeficit"<<std::endl;
       return cueDeficit() ;
     case 2 :
       return costFunction();
@@ -400,6 +399,7 @@ void IARController::step()
     fichier.open("resultat_"+std::to_string(ALossPerCycle)+".txt", std::ios::out | std::ios::app);
     fichier << nbr_iteration << std::endl;
     fichier.close();
+
     exit(0);
   }else{
     nbr_iteration++;
@@ -407,8 +407,8 @@ void IARController::step()
     // "Energy A : " << _wm->getEnergyLevel_A() <<
     // "\nEnergyB : " << _wm->getEnergyLevel_B() <<std::endl;
   }
-  // if(nbr_iteration%5000 == 0 )
-  //   std::cout << nbr_iteration << std::endl;
+  if(nbr_iteration%5000 == 0 )
+    std::cout << nbr_iteration << std::endl;
   // if( _directionX_A != ldirXA
   //   || _directionY_A != ldirYA
   //   || _directionX_B != ldirXB

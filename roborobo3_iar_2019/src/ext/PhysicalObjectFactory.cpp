@@ -72,20 +72,20 @@ void PhysicalObjectFactory::makeObject( int type , bool clumped ){
 
     //initialisze
     if(_clumpId_A == -1 && _clumpId_B == -1){
-      std::cout << "initialisation A " << _clumpId_B << std::endl;
+      // std::cout << "initialisation A " << _clumpId_B << std::endl;
       int rx = std::rand()%gAreaWidth;
       int ry = std::rand()%gAreaHeight;
       gClumpCenters_A.push_back(Point2d(rx,ry));
       gClumpNb_A.push_back(0);
       _clumpId_A++;
-      std::cout << "initialisation B " << _clumpId_B << std::endl;
+      // std::cout << "initialisation B " << _clumpId_B << std::endl;
       rx = std::rand()%gAreaWidth;
       ry = std::rand()%gAreaHeight;
       gClumpCenters_B.push_back(Point2d(rx,ry));
       gClumpNb_B.push_back(0);
       _clumpId_B++;
     }else if(type == 0 && gClumpNb_A[_clumpId_A] == 0){
-        std::cout << "add new clump A " << _clumpId_A << std::endl;
+        // std::cout << "add new clump A " << _clumpId_A << std::endl;
         int rx = std::rand()%gAreaWidth;
         int ry = std::rand()%gAreaHeight;
         gClumpCenters_A.push_back(Point2d(rx,ry));
@@ -93,7 +93,7 @@ void PhysicalObjectFactory::makeObject( int type , bool clumped ){
         _clumpId_A++;
         // std::cout << " clumpID upgrade : " << _clumpId << std::endl;
     }else if(type == 1 && gClumpNb_B[_clumpId_B] == 0 ){
-      std::cout << "add new clump B " << _clumpId_B << std::endl;
+      // std::cout << "add new clump B " << _clumpId_B << std::endl;
         int rx = std::rand()%gAreaWidth;
         int ry = std::rand()%gAreaHeight;
         gClumpCenters_B.push_back(Point2d(rx,ry));
