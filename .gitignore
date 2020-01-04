@@ -3,4 +3,4 @@ roborobo3_iar_2019/data/env_10000_environment.bmp
 roborobo3_iar_2019/data/env_10000_footprints.bmp
 roborobo3_iar_2019/data/env_10000_foreground.bmp
 roborobo3_iar_2019/logs/
-
+*.o
