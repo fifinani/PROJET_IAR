@@ -72,12 +72,7 @@ EnergyItem_B::EnergyItem_B( int __id ) : CircleObject( __id ) // should only be 
 EnergyItem_B::EnergyItem_B( int __id, int clumpId ) : EnergyItem_B(__id) // should only be called by PhysicalObjectFactory
 {
     if(clumpId >=0){
-<<<<<<< HEAD
-      if ( gVerbose && gDisplayMode <= 1)
-      std::cout << "add B at : " << clumpId << " nbr : " << gClumpNb_B[clumpId] << std::endl;
-=======
       // std::cout << "add B at : " << clumpId << " nbr : " << gClumpNb_B[clumpId] << std::endl;
->>>>>>> 60e0b5276beeb7b61a004a29bbcbdd18f906fb33
       _clumpID = clumpId;
       MoveToClump(clumpId);
     }
@@ -103,19 +98,10 @@ void EnergyItem_B::isWalked( int __idAgent )
     regrowTime = 100;
     if(_clumpID != -1 ){
       MoveToClump(selectNewClump());
-<<<<<<< HEAD
-      if ( gVerbose && gDisplayMode <= 1)
-      std::cout << "clump B\n :";
-      for(int i =0;  i < gClumpCenters_B.size() ; i++ ){
-        if ( gVerbose && gDisplayMode <= 1)
-        std::cout << "\tposition : " <<  gClumpCenters_B[i].x << " " << gClumpCenters_B[i].y << " nb : " << gClumpNb_B[i] << std::endl;
-      }
-=======
       // std::cout << "clump B\n :";
       // for(int i =0;  i < gClumpCenters_B.size() ; i++ ){
       //   std::cout << "\tposition : " <<  gClumpCenters_B[i].x << " " << gClumpCenters_B[i].y << " nb : " << gClumpNb_B[i] << std::endl;
       // }
->>>>>>> 60e0b5276beeb7b61a004a29bbcbdd18f906fb33
     }else{
       relocate();
     }
@@ -136,12 +122,8 @@ void EnergyItem_B::moveClump(int clumpId){
   int ry = std::rand()%gAreaHeight;
   gClumpCenters_B[clumpId] = Point2d(rx,ry);
   gClumpNb_B[clumpId] = 0;
-<<<<<<< HEAD
   if ( gVerbose && gDisplayMode <= 1)
   std::cout << "create new clump B at : " << rx << " " << ry << std::endl;
-=======
-  // std::cout << "create new clump B at : " << rx << " " << ry << std::endl;
->>>>>>> 60e0b5276beeb7b61a004a29bbcbdd18f906fb33
 }
 
 int EnergyItem_B::selectNewClump(){
