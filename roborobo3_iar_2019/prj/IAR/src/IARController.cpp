@@ -60,6 +60,22 @@ IARController::IARController( RobotWorldModel *__wm ) : Controller ( __wm )
       convertFromString<int>(objectiveFunction, gProperties.getProperty( str ), std::dec);
     }
 
+    if ( gProperties.hasProperty( "gClumped" ) ){
+  		std::string s = gProperties.getProperty( "gClumped" );
+  		if ( s == "true" || s == "True" || s == "TRUE" )
+  	    {
+  			isClump = true;
+        clumpedStr = "clumped";
+  		}else{
+  			isClump = false;
+        clumpedStr = "unClumped";
+
+  		}
+  	}else
+  	{
+  			isClump = false;
+  	}
+
 }
 
 /* **** **** **** */
@@ -134,14 +150,18 @@ int IARController::planningCostFunction(){
   algo = "One_Step_Planning";
   double A_payoff = A_A;
   double B_payoff = B_B;
+  double dist_A = closest_dist_A;
+  double dist_B = closest_dist_B;
   if(closest_dist_A == -1 ){
     A_payoff = 0;
+    dist_A = MAXSENSORDISTANCE;
   }
   if(closest_dist_B == -1 ){
     B_payoff = 0;
+    dist_B = MAXSENSORDISTANCE;
   }
-  double cost_A = std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_payoff + (ALossPerCycle*closest_dist_A/DISTANCE_PER_CYCLE)),2) + std::pow((((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_A + (BLossPerCycle*closest_dist_A/DISTANCE_PER_CYCLE)),2);
-  double cost_B = std::pow((((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_payoff + (BLossPerCycle*closest_dist_B/DISTANCE_PER_CYCLE)),2) + std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_B + (ALossPerCycle*closest_dist_B/DISTANCE_PER_CYCLE)),2);
+  double cost_A = std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_payoff + (ALossPerCycle*dist_A/MAXSENSORDISTANCE)),2) + std::pow((((B_MAX -_wm->getEnergyLevel_B())/B_MAX) - B_A + (BLossPerCycle*dist_A/MAXSENSORDISTANCE)),2);
+  double cost_B = std::pow((((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_payoff + (BLossPerCycle*dist_B/MAXSENSORDISTANCE)),2) + std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_B + (ALossPerCycle*dist_B/MAXSENSORDISTANCE)),2);
   int choice = cost_A > cost_B;
   if(choice==0 && closest_dist_A == -1) {
     if(closest_dist_B == -1 || ((B_MAX - _wm->getEnergyLevel_B())/B_MAX) < 0.01 ) {
@@ -165,14 +185,18 @@ int IARController::reactiveFunction(){
   algo = "Reactive_One_Step_Planning";
   double A_payoff = A_A;
   double B_payoff = B_B;
+  double dist_A = closest_dist_A;
+  double dist_B = closest_dist_B;
   if(closest_dist_A == -1 ){
     A_payoff = 0;
+    dist_A = MAXSENSORDISTANCE;
   }
   if(closest_dist_B == -1 ){
     B_payoff = 0;
+    dist_B = MAXSENSORDISTANCE;
   }
-  double cost_A = std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_payoff + (ALossPerCycle*closest_dist_A/DISTANCE_PER_CYCLE)),2) + std::pow((((B_MAX -_wm->getEnergyLevel_B())/B_MAX) - B_A + (BLossPerCycle*closest_dist_A/DISTANCE_PER_CYCLE)),2);
-  double cost_B = std::pow((((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_payoff + (BLossPerCycle*closest_dist_B/DISTANCE_PER_CYCLE)),2) + std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_B + (ALossPerCycle*closest_dist_B/DISTANCE_PER_CYCLE)),2);
+  double cost_A = std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_payoff + (ALossPerCycle*dist_A/MAXSENSORDISTANCE)),2) + std::pow((((B_MAX -_wm->getEnergyLevel_B())/B_MAX) - B_A + (BLossPerCycle*dist_A/MAXSENSORDISTANCE)),2);
+  double cost_B = std::pow((((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_payoff + (BLossPerCycle*dist_B/MAXSENSORDISTANCE)),2) + std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_B + (ALossPerCycle*dist_B/MAXSENSORDISTANCE)),2);
   int choice = cost_A > cost_B;
   if((choice && closest_dist_B == -1) || (!choice && closest_dist_A == -1) ){
     if(closest_dist_A == -1 && closest_dist_B == -1){
@@ -410,7 +434,7 @@ void IARController::step()
   if(_wm->getEnergyLevel_A() == 0 || _wm->getEnergyLevel_B() == 0 || nbr_iteration == 50000){
     std::cout << "MORT" << nbr_iteration << std::endl;
     std::ofstream fichier;
-    fichier.open( algo + "_resultat_"+std::to_string(ALossPerCycle)+ "_range_"+std::to_string(MAXSENSORDISTANCE)+".txt", std::ios::out | std::ios::app);
+    fichier.open( "resultat/"+clumpedStr + "_" + std::to_string(MAXSENSORDISTANCE)+"/" + algo + "/" + algo + "_" + std::to_string(ALossPerCycle)+ "_" + clumpedStr + "_range_"+std::to_string(MAXSENSORDISTANCE)+".txt", std::ios::out | std::ios::app);
     fichier << nbr_iteration << std::endl;
     fichier.close();
 
