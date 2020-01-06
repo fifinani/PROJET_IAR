@@ -72,6 +72,7 @@ EnergyItem_A::EnergyItem_A( int __id ) : CircleObject( __id ) // should only be 
 EnergyItem_A::EnergyItem_A( int __id, int clumpId ) : EnergyItem_A(__id) // should only be called by PhysicalObjectFactory
 {
   if(clumpId >=0){
+    if ( gVerbose && gDisplayMode <= 1)
     std::cout << "add A at : " << clumpId << " nbr : " << gClumpNb_A[clumpId] << std::endl;
     _clumpID = clumpId;
     MoveToClump(clumpId);
@@ -116,6 +117,7 @@ void EnergyItem_A::moveClump(int clumpId){
   int ry = std::rand()%gAreaHeight;
   gClumpCenters_A[clumpId] = Point2d(rx,ry);
   gClumpNb_A[clumpId] = 0;
+  if ( gVerbose && gDisplayMode <= 1)
   std::cout << "create new clump A at : " << rx << " " << ry << std::endl;
 }
 
