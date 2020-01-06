@@ -18,7 +18,9 @@ class IARController : public Controller
 	private:
 		double A_value;
 		double B_value;
-		
+		bool isClump = false;
+		std::string clumpedStr = "unClumped";
+
 		PhysicalObject * closest_A;
 		PhysicalObject * closest_B;
 		double closest_dist_A = -1;
