@@ -122,7 +122,8 @@ void EnergyItem_B::moveClump(int clumpId){
   int ry = std::rand()%gAreaHeight;
   gClumpCenters_B[clumpId] = Point2d(rx,ry);
   gClumpNb_B[clumpId] = 0;
-  // std::cout << "create new clump B at : " << rx << " " << ry << std::endl;
+  if ( gVerbose && gDisplayMode <= 1)
+  std::cout << "create new clump B at : " << rx << " " << ry << std::endl;
 }
 
 int EnergyItem_B::selectNewClump(){

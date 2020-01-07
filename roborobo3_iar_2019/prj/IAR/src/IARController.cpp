@@ -187,26 +187,16 @@ int IARController::reactiveFunction(){
   double B_payoff = B_B;
   double dist_A = closest_dist_A;
   double dist_B = closest_dist_B;
-  if(closest_dist_A == -1 ){
-    A_payoff = 0;
-    dist_A = MAXSENSORDISTANCE;
-  }
-  if(closest_dist_B == -1 ){
-    B_payoff = 0;
-    dist_B = MAXSENSORDISTANCE;
-  }
-  double cost_A = std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_payoff + (ALossPerCycle*dist_A/MAXSENSORDISTANCE)),2) + std::pow((((B_MAX -_wm->getEnergyLevel_B())/B_MAX) - B_A + (BLossPerCycle*dist_A/MAXSENSORDISTANCE)),2);
-  double cost_B = std::pow((((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_payoff + (BLossPerCycle*dist_B/MAXSENSORDISTANCE)),2) + std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_B + (ALossPerCycle*dist_B/MAXSENSORDISTANCE)),2);
-  int choice = cost_A > cost_B;
-  if((choice && closest_dist_B == -1) || (!choice && closest_dist_A == -1) ){
+  if(closest_dist_A == -1 || closest_dist_B == -1){
     if(closest_dist_A == -1 && closest_dist_B == -1){
       return -1;
     }else{
-      return closest_dist_A == -1 || ( !(closest_dist_A<closest_dist_B) && closest_dist_B!=-1 ) ;
+      return closest_dist_A == -1 || ( !(closest_dist_A<closest_dist_B) && closest_dist_B!=-1 );
     }
-  }else{
-    return choice;
   }
+  double cost_A = std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_payoff + (ALossPerCycle*dist_A/MAXSENSORDISTANCE)),2) + std::pow((((B_MAX -_wm->getEnergyLevel_B())/B_MAX) - B_A + (BLossPerCycle*dist_A/MAXSENSORDISTANCE)),2);
+  double cost_B = std::pow((((B_MAX - _wm->getEnergyLevel_B())/B_MAX) - B_payoff + (BLossPerCycle*dist_B/MAXSENSORDISTANCE)),2) + std::pow((((A_MAX - _wm->getEnergyLevel_A())/A_MAX) - A_B + (ALossPerCycle*dist_B/MAXSENSORDISTANCE)),2);
+  return cost_A > cost_B;
 }
 
 void IARController::explore(){
