@@ -59,6 +59,11 @@ IARController::IARController( RobotWorldModel *__wm ) : Controller ( __wm )
     {
       convertFromString<int>(objectiveFunction, gProperties.getProperty( str ), std::dec);
     }
+    str = "gNbOfPhysicalObjects";
+    if ( gProperties.hasProperty( str ) == true )
+    {
+      convertFromString<int>(nb_objet, gProperties.getProperty( str ), std::dec);
+    }
 
     if ( gProperties.hasProperty( "gClumped" ) ){
   		std::string s = gProperties.getProperty( "gClumped" );
@@ -424,7 +429,12 @@ void IARController::step()
   if(_wm->getEnergyLevel_A() == 0 || _wm->getEnergyLevel_B() == 0 || nbr_iteration == 50000){
     std::cout << "MORT" << nbr_iteration << std::endl;
     std::ofstream fichier;
-    fichier.open( "resultat/"+clumpedStr + "_" + std::to_string(MAXSENSORDISTANCE)+"/" + algo + "/" + algo + "_" + std::to_string(ALossPerCycle)+ "_" + clumpedStr + "_range_"+std::to_string(MAXSENSORDISTANCE)+".txt", std::ios::out | std::ios::app);
+    if( nb_objet == 20){
+      fichier.open( "resultat/"+clumpedStr + "_" + std::to_string(MAXSENSORDISTANCE)+"/" + algo + "/" + algo + "_" + std::to_string(ALossPerCycle)+ "_" + clumpedStr + "_range_"+std::to_string(MAXSENSORDISTANCE)+".txt", std::ios::out | std::ios::app);
+    }else{
+      fichier.open( "resultat/"+clumpedStr + "_" + std::to_string(MAXSENSORDISTANCE)+"_40/" + algo + "/" + algo + "_" + std::to_string(ALossPerCycle)+ "_" + clumpedStr + "_range_"+std::to_string(MAXSENSORDISTANCE)+".txt", std::ios::out | std::ios::app);
+
+    }
     fichier << nbr_iteration << std::endl;
     fichier.close();
 
@@ -435,8 +445,8 @@ void IARController::step()
     // "Energy A : " << _wm->getEnergyLevel_A() <<
     // "\nEnergyB : " << _wm->getEnergyLevel_B() <<std::endl;
   }
-  if(nbr_iteration%5000 == 0 )
-    std::cout << nbr_iteration << std::endl;
+  //if(nbr_iteration%5000 == 0 )
+  //  std::cout << nbr_iteration << std::endl;
   // if( _directionX_A != ldirXA
   //   || _directionY_A != ldirYA
   //   || _directionX_B != ldirXB
